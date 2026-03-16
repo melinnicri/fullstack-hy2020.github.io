@@ -1110,7 +1110,7 @@ Because styled-components processes the style definitions, it is possible to use
 
 > react-spring is a spring-physics based animation library that should cover most of your UI related animation needs. It gives you tools flexible enough to confidently cast your ideas into moving interfaces.
 
-[React-spring](https://www.react-spring.io/) is a library that provides a clean [API](https://react-spring.io/basics) for animating React Native components.
+[React-spring](https://www.react-spring.dev/) is a library that provides a clean [API](https://www.react-spring.dev/docs/getting-started) for animating React Native components.
 
 #### React Navigation
 
