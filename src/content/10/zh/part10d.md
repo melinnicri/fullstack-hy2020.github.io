@@ -1226,8 +1226,8 @@ const Main = () => {
 <!-- > react-spring is a spring-physics based animation library that should cover most of your UI related animation needs. It gives you tools flexible enough to confidently cast your ideas into moving interfaces.-->
  > react-spring是一个基于弹簧物理学的动画库，应该能满足你大部分的UI相关动画需求。它为你提供了足够灵活的工具，可以自信地将你的想法投射到移动界面中。
 
-<!-- [React-spring](https://www.react-spring.io/) is a library that provides a clean [API](https://react-spring.io/basics) for animating React Native components.-->
- [React-spring](https://www.react-spring.io/)是一个库，为React Native组件的动画化提供了一个干净的[API](https://react-spring.io/basics)。
+<!-- [React-spring](https://www.react-spring.dev/) is a library that provides a clean [API](https://www.react-spring.dev/docs/getting-started) for animating React Native components.-->
+ [React-spring](https://www.react-spring.dev/)是一个库，为React Native组件的动画化提供了一个干净的[API](https://www.react-spring.dev/docs/getting-started)。
 
 #### React Navigation
 
