@@ -123,17 +123,18 @@ Materiaali siirretty osoitteeseen <a href="https://courses.mooc.fi/org/uh-cs/cou
 - Tee kurssikoe palautusjärjestelmässä, lue lisää [täältä](/osa0/yleista#kurssikoe).
 - Pyydä suoritusmerkintää palautussovelluksessa. Lue lisää [täältä](/osa0/yleista#suoritusmerkinnan-pyytaminen)
 
-#### Kurssin suoritusohjeet pähkinänkuoressa (Osat 6–10) 
+#### Kurssin suoritusohjeet pähkinänkuoressa (Osat 6–8 ja 10) 
 
-- Tee tehtävät. Palauta vastauksesi palautussovelluksen kautta. Huomaa, että osat 8–11 palautetaan palautussovelluksessa erillisiin kurssi-instansseihin. 
+- Tee tehtävät. Palauta vastauksesi palautussovelluksen kautta. Huomaa, että osat 8 ja 10 palautetaan palautussovelluksessa erillisiin kurssi-instansseihin. 
 
 - Ilmoittaudu kurssille. Pääset ilmoittautumaan kurssimateriaalista (ks. [Osat ja suorittaminen](/osa0/yleista#osat-ja-suorittaminen)) löytyvän ilmoittautumislinkin kautta.  Ilmoittaudu erikseen kuhunkin osaan. 
 - Pyydä suoritusmerkintää palautussovelluksessa. Lue lisää [täältä](/osa0/yleista#suoritusmerkinnan-pyytaminen)
 
-#### Kurssin suoritusohjeet pähkinänkuoressa (Osat 11-13) 
+#### Kurssin suoritusohjeet pähkinänkuoressa (Osat 9 ja 11-13) 
 
 Käytännöt selviävät osien materiaalista:
 
+- <a href="https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-typescript">osa 9</a>
 - <a href="https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-continuous-integration">osa 11</a>
 - <a href="https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-containers">osa 12</a>
 - <a href="https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-relational-databases">osa 13</a>
@@ -220,6 +221,7 @@ Arvosana siirtyy Helsingin yliopiston opintorekisteriin Sisuun ja [Opintopolkuun
 Kun suoritusmerkintä on kirjattu, näet palautussovelluksessa tekstin
 
 > <i>University credits registered, see the course page how to get a transcript if you need one</i>
+
 ### Miten saan selville Helsingin yliopiston opiskelijanumeroni?
 
 Kun ilmoittaudut ensimmäistä kertaa Avoimen yliopiston kautta jollekin kurssille, sinulle luodaan Helsingin yliopiston opiskelijanumero. <i>**Varmista siis että olet ilmoittautunut kurssille, ennen kuin alat selvittää opiskelijanumeroasi.**</i>
@@ -272,7 +274,7 @@ Kurssilla ei ole vuosittaisia versiota. Kurssi on siis käynnissä koko ajan. Jo
 Muutoksista huolimatta <i>kaikki jo tehdyt palautukset säilyvät voimassa</i>, eli voit jatkaa kurssia päivityksistä huolimatta normaaliin tapaan.
 
 Viimeaikaisia isompia muutoksia
-- Osat 11-13 (maaliskuu 2026): sisältö päivitetty ja materiaali siirretty uuteen osoitteeseen
+- Osat 9 ja 11-13 (maaliskuu 2026): sisältö päivitetty ja materiaali siirretty uuteen osoitteeseen
 - Osa 8: (3.1.2026) Apollo Server päivitetty versioon v5. Apollo Client päivitetty versioon v4. Backend-koodin refaktorointi siirretty osaan 8c. Lukuisia muita pieniä parannuksia.
 - Osa 6 (12.10.2025): Jest korvattu Vitestillä. Axios korvattu Fetch API:lla.
 - Osa 5 (21.8.2025): React päivitetty versioon 19. Proptypes ja forwardRef poistuneet käytöstä. Eslint-konfiguraatiot päivitetty

@@ -172,18 +172,19 @@ Material of part 13 has been moved to <a href="https://courses.mooc.fi/org/uh-cs
 
 Please note that if you do the "base course" with 6 or 7 credits, you need separate registrations for the extra credits, see [Parts and completion](/en/part0/general_info#parts-and-completion) for more.
 
-#### How to study the course – instructions in a nutshell: parts 8-10
+#### How to study the course – instructions in a nutshell: parts 8 and 10
 
-- Do the exercises. The exercises are submitted through GitHub and marking them as done on the submission system. Note that parts 8-10 have a separate instance in the submission system
+- Do the exercises. The exercises are submitted through GitHub and marking them as done on the submission system. Note that parts 8 and 10 have a separate instance in the submission system
     - [The course certificate](/en/part0/general_info#course-certificate) will be available in the submission system
 - If you want to get University of Helsinki credits
     - Enroll in the course. You can enroll in each part through the link in the course material ([Parts and completion](/en/part0/general_info#parts-and-completion)). Enroll in each part separately.
 - Mark the part completed in the submission system. Read more [here](/en/part0/general_info#how-to-get-your-credits)
 
-#### How to study the course – instructions in a nutshell: parts 11-13
+#### How to study the course – instructions in a nutshell: parts 9 and 11-13
 
 All practicalities are explained in the new course pages
 
+- <a href="https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-typescript">part 9</a>
 - <a href="https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-continuous-integration">part 11</a>
 - <a href="https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-containers">part 12</a>
 - <a href="https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-relational-databases">part 13</a>
@@ -329,7 +330,7 @@ Despite changes *all the submitted exercises remain valid*, and the course can b
 
 Recent major changes
 
-- Parts 11-13 (March 2026): content updated and material moved to new platform
+- Parts 9, 11-13 (March 2026): content updated and material moved to new platform
 - Part 8: (3th January 2026) Apollo Server updated to v5. Apollo Client updated to v4. Refactoring backend code moved to part8c. Lot's of other small improvements.
 - Part 6 (12th October 2025): Jest replaced with Vitest. Axios replaced with Fetch API
 - Part 5 (21st August, 2025): React updated to version 19. PropTypes and forwardRef are no longer used. ESLint configurations updated
