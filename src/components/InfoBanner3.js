@@ -16,7 +16,9 @@ const InfoBanner = ({ visible, onHide }) => {
     flexWrap: 'wrap',
     flexDirection: 'row',
     alignContent: 'space-between',
-    backgroundColor: 'var(--color-background)',
+    backgroundColor: '#fff3cd',
+    borderColor: '#ffc107',
+    color: '#5a4000',
     zIndex: 2147483647,
   };
 
