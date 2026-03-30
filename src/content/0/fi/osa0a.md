@@ -53,13 +53,15 @@ Arvosana/opintopisterajat:
 
 | tehtäviä     | opintopisteitä | arvosana | 
 | ------------ | :------------: | :------: |
-| 138          |       7        | 5        |
-| 127          |       6        | 5        |
+| 150          |       7        | 5        |
+| 135          |       6        | 5        |
 | 116          |       5        | 5        |
 | 105          |       5        | 4        |
 | 94           |       5        | 3        |
 | 83           |       5        | 2        |
 | 72           |       5        | 1        |
+
+6 ja 7 opintopisteen rajaa muutettu osan 5 uusien tehtävien myötä.
 
 Jos haluat kurssista virallisen suoritusmerkinnän, kuuluu kurssiin myös koe. Hyväksytty suoritus edellyttää kokeen läpäisemistä, koe ei kuitenkaan vaikuta arvosanaan. Lisää tietoa kurssikokeesta [täällä](/osa0/yleista/#kurssikoe).
 
@@ -274,6 +276,7 @@ Kurssilla ei ole vuosittaisia versiota. Kurssi on siis käynnissä koko ajan. Jo
 Muutoksista huolimatta <i>kaikki jo tehdyt palautukset säilyvät voimassa</i>, eli voit jatkaa kurssia päivityksistä huolimatta normaaliin tapaan.
 
 Viimeaikaisia isompia muutoksia
+- Osa 5 (31.3.2026): Cypressiä käsittelevä osuus poistettu. React Router ja tyylikirjastot siirretty osasta 7 tähän osaan
 - Osat 9 ja 11-13 (maaliskuu 2026): sisältö päivitetty ja materiaali siirretty uuteen osoitteeseen
 - Osa 8: (3.1.2026) Apollo Server päivitetty versioon v5. Apollo Client päivitetty versioon v4. Backend-koodin refaktorointi siirretty osaan 8c. Lukuisia muita pieniä parannuksia.
 - Osa 6 (12.10.2025): Jest korvattu Vitestillä. Axios korvattu Fetch API:lla.

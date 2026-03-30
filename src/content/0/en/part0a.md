@@ -90,13 +90,15 @@ Credits and grades are calculated as follows:
 
 | exercises    | credits        | grade    |
 | ------------ | :------------: | :------: |
-| 138          |       7        | 5        |
-| 127          |       6        | 5        |
+| 150          |       7        | 5        |
+| 135          |       6        | 5        |
 | 116          |       5        | 5        |
 | 105          |       5        | 4        |
 | 94           |       5        | 3        |
 | 83           |       5        | 2        |
 | 72           |       5        | 1        |
+
+The 6- and 7-credit thresholds have been adjusted to reflect the new exercises in Part 5.
 
 Once you have completed enough exercises for a passing grade, you can download the course certificate from the [submission system](https://studies.cs.helsinki.fi/stats/courses/fullstackopen).
 
@@ -188,7 +190,6 @@ All practicalities are explained in the new course pages
 - <a href="https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-continuous-integration">part 11</a>
 - <a href="https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-containers">part 12</a>
 - <a href="https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-relational-databases">part 13</a>
-
 
 ### Submitting exercises
 
@@ -330,12 +331,12 @@ Despite changes *all the submitted exercises remain valid*, and the course can b
 
 Recent major changes
 
+- Part 5 (31st March 2026): React Router and style libraries have been moved from Part 7 to this part
 - Parts 9, 11-13 (March 2026): content updated and material moved to new platform
 - Part 8: (3th January 2026) Apollo Server updated to v5. Apollo Client updated to v4. Refactoring backend code moved to part8c. Lot's of other small improvements.
 - Part 6 (12th October 2025): Jest replaced with Vitest. Axios replaced with Fetch API
 - Part 5 (21st August, 2025): React updated to version 19. PropTypes and forwardRef are no longer used. ESLint configurations updated
 - Part 4 (13th August, 2025): Express updated to version 5 and the express-async-errors library removed from part 4b
-
 
 ### Expanding on a previously completed course
 
