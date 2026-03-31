@@ -11,9 +11,9 @@ Sovelluksemme ulkoasu on tällä hetkellä melko karu:
 
 ![](../../images/5/u1.png)
 
-Haluamme tilanteeseen muutoksen. Aloitetaan sovelluksen navigaatiorakenteesta:
+Haluamme tilanteeseen muutoksen. Aloitetaan sovelluksen navigaatiorakenteesta.
 
-On erittäin tyypillistä, että web-sovelluksissa on navigaatiopalkki, jonka avulla on mahdollista vaihtaa sovelluksen näkymää. Muistiinpanosovelluksemme voisi sisältää pääsivun
+On erittäin tyypillistä, että web-sovelluksissa on navigaatiopalkki, jonka avulla on mahdollista vaihtaa sovelluksen näkymää. Muistiinpanosovelluksemme voisi sisältää pääsivun:
 
 ![](../../images/5/u6.png)
 
@@ -96,7 +96,7 @@ const Home = () => {
 export default Home
 ```
 
-Eriytetään sovelluksen aiempi päänäkymä omaksi komponentiksi, siirretään kuitenkin muistiinpanojen tilan käsittely komponentin ulkopuolelle:
+Eriytetään sovelluksen aiempi komponentissa <i>App</i> ollut päänäkymä omaksi komponentiksi, Siirretään kuitenkin muistiinpanojen tilan käsittely komponentin ulkopuolelle:
 
 
 ```js
@@ -108,7 +108,6 @@ const NoteList = ({ notes }) => { // highlight-line
 ```
 
 Komponentti <i>App</i> muuttuu nyt seuraavasti
-
 
 ```js
 import { useState, useEffect } from 'react'
@@ -207,9 +206,9 @@ Klikatessa navigaatiopalkista "notes", vaihtuu selaimen osoiterivin osoitteeksi 
 
 ![](../../images/5/u3.png)
 
-Normaalissa Web-sivussa selaimen osoiterivillä olevan osoitteen vaihtuminen aiheuttaa sivun uudelleenlataamisen. React Routeria käyttäen näin ei kuitenkaan tapahdtu vaan reititys tehdään täysin JavaScriptin avulla frontendissa.
-
 Vastaavasti, kun klikataan "new note" osoitteeksi tulee <i>create</i> renderöidään komponentti <i>NoteForm</i>.
+
+Normaalissa Web-sivussa selaimen osoiterivillä olevan osoitteen vaihtuminen aiheuttaa sivun uudelleenlataamisen. React Routeria käyttäen näin ei kuitenkaan tapahdtu vaan reititys tehdään täysin JavaScriptin avulla frontendissa.
 
 Käyttämämme Router-komponentti on [BrowserRouter](https://reactrouter.com/en/main/router-components/browser-router):
 
@@ -321,7 +320,7 @@ const Note = ({ notes, toggleImportance }) => {
 export default Note
 ```
 
-Toisin kuin aiemmin, komponentti <i>Note</i> saa nyt parametrikseen <i>kaikki</i> muistiinpanot propsina <i>notes</i> ja se pääsee URL:n yksilöivään osaan eli näytettävän muistiinpanon <i>id</i>:hen käsiksi React Routerin funktion [useParams](https://reactrouter.com/api/hooks/useParams) avulla. 
+Toisin kuin aiemmin, komponentti <i>Note</i> saa nyt parametrikseen <i>kaikki muistiinpanot</i> propsina <i>notes</i> ja se pääsee URL:n yksilöivään osaan eli näytettävän muistiinpanon <i>id</i>:hen käsiksi React Routerin funktion [useParams](https://reactrouter.com/api/hooks/useParams) avulla. 
 
 ### useNavigate
 
@@ -347,7 +346,8 @@ const App = () => {
 
       <Routes>
         <Route path="/notes/:id" element={
-          <Note notes={notes}
+          <Note 
+            notes={notes}
             toggleImportanceOf={toggleImportanceOf}
             deleteNote={deleteNote} // highlight-line
           />
@@ -463,14 +463,7 @@ const Note = ({ note, id, toggleImportanceOf, deleteNote }) => {  // highlight-l
   const id = useParams().id
   const navigate = useNavigate()
 
-  const label = note.important ? 'make not important' : 'make important'
-
-  const handleDelete = () => {
-    if (window.confirm(`Delete note "${note.content}"?`)) {
-      deleteNote(id)
-      navigate('/notes')
-    }
-  }
+    // ...
 
   return (
     <li className="note">
@@ -598,7 +591,7 @@ Sovelluksen tämänhetkinen koodi on kokonaisuudessaan [GitHubissa](https://gith
 
 #### 5.24: routed blogs, step1
 
-Lisää sovellukseen React Router siten, että navigaatiopalkissa olevia linkkejä klikkailemalla saadaan säädeltyä näytettävää näkymää.
+Lisää blogisovellukseen React Router siten, että navigaatiopalkissa olevia linkkejä klikkailemalla saadaan säädeltyä näytettävää näkymää.
 
 Sovelluksen juuressa eli polulla _/_ näytetään kaikkien blogien lista:
 
@@ -660,15 +653,15 @@ Blogien järjestämistä tykkäysjärjestykseen ei siis nyt testata.
 
 </div>
 
-<div class="content">
-
-Osassa 2 on jo katsottu kahta tapaa tyylien lisäämiseen, eli vanhan koulukunnan [yksittäistä CSS](/osa2#tyylien-lisääminen)-tiedostoa ja [inline-tyylejä](/osa2/tyylien_lisaaminen_react_sovellukseen#inline-tyylit). Katsotaan tässä osassa vielä muutamaa tapaa.
+<div class="content"
 
 ### Valmiit käyttöliittymätyylikirjastot
 
-Eräs lähestymistapa sovelluksen tyylien määrittelyyn on valmiin "UI-frameworkin" eli suomeksi ehkä käyttöliittymätyylikirjaston käyttö.
+Osassa 2 on jo katsottu kahta tapaa tyylien lisäämiseen, eli vanhan koulukunnan [yksittäistä CSS](/osa2#tyylien-lisääminen)-tiedostoa ja [inline-tyylejä](/osa2/tyylien_lisaaminen_react_sovellukseen#inline-tyylit). Katsotaan tässä osassa vielä muutamaa tapaa.
 
-Ensimmäinen laajaa kuuluisuutta saanut UI-framework oli Twitterin kehittämä [Bootstrap](https://getbootstrap.com/), joka lienee edelleen UI-frameworkeista eniten käytetty. Viime aikoina UI-frameworkeja on noussut kuin sieniä sateella. Valikoima on niin iso, ettei tässä kannata edes yrittää tehdä tyhjentävää listaa.
+Eräs lähestymistapa sovelluksen tyylien määrittelyyn on valmiin "UI-frameworkin" eli käyttöliittymätyylikirjaston käyttö.
+
+Ensimmäinen laajaa kuuluisuutta saanut UI-framework oli Twitterin kehittämä [Bootstrap](https://getbootstrap.com/). Viime vuosina UI-frameworkeja on noussut kuin sieniä sateella. Valikoima on niin iso, ettei tyhjentävää listaa kannata edes yrittää tehdä.
 
 Monet UI-frameworkit sisältävät web-sovellusten käyttöön valmiiksi määriteltyjä teemoja sekä "komponentteja", kuten painikkeita, menuja ja taulukkoja. Termi komponentti on edellä kirjoitettu hipsuissa sillä kyse ei ole samasta asiasta kuin React-komponentti. Useimmiten UI-frameworkeja käytetään sisällyttämällä sovellukseen frameworkin määrittelemät CSS-tyylitiedostot sekä JavaScript-koodi.
 
@@ -730,7 +723,9 @@ const NoteList = ({ notes }) => {
             {notes.map(note => (
               <TableRow key={note.id}>
                 <TableCell>
-                  <Link to={`/notes/${note.id}`}>{note.content}</Link>
+                  <Link to={`/notes/${note.id}`}>
+                    {note.content}
+                  </Link>
                 </TableCell>
                 <TableCell>
                   {note.user.name}
@@ -780,7 +775,9 @@ const NoteForm = ({ createNote }) => {
           onChange={event => setNewNote(event.target.value)}
         />
         <div>
-          <Button type="submit" variant="contained" style={{ marginTop: 10 }}>save</Button>
+          <Button type="submit" variant="contained" style={{ marginTop: 10 }}>
+            save
+          </Button>
         </div>
       </form>
     </div>
@@ -876,7 +873,7 @@ Alert on ulkoasultaan tyylikäs:
 
 #### Navigaatiovalikko
 
-Navigaatiovalikko toteutetaan komponentin [AppBar](https://mui.com/components/app-bar/) avulla
+Navigaatiovalikko toteutetaan komponentin [AppBar](https://mui.com/components/app-bar/) avulla.
 
 Jos sovelletaan suoraan dokumentaation esimerkkiä  
 
@@ -904,7 +901,7 @@ Määrittelemällä
 </Button>
 ```
 
-renderöidään komponentti _Button_ siten, että sen juurikomponenttina onkin react-router-dom-kirjaston komponentti _Link_, jolle siirtyy polun kertova prop _to_.  
+renderöidään komponentti <i>Button</i> siten, että sen juurikomponenttina onkin react-router-dom-kirjaston komponentti <i>Link</i>, jolle siirtyy polun kertova prop <i>to</i>.  
 
 Navigaatiopalkin koodi kokonaisuudessaan on seuraava
 
@@ -920,21 +917,27 @@ Navigaatiopalkin koodi kokonaisuudessaan on seuraava
 
 ja lopputulos on haluamamme kaltainen:
 
-![](../../images/5/u15.png)
+![](../../images/5/u16.png)
 
 Huomaamme kuitenkin, että kun hiiri viedään navigaatiopalkin päälle, on hover-indikaattori liian huomaamaton. Korjataan tilanne määrittelemällä tilanteisiin hieman parempi taustaväri: 
 
 
 ```js
-const hoverStyle = { '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }
+const style = { '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }
 
 return (
   <Container>
     <AppBar position="static">
       <Toolbar>
-        <Button color="inherit" component={Link} to="/" sx={hoverStyle}>home</Button>
-        <Button color="inherit" component={Link} to="/notes" sx={hoverStyle}>notes</Button>
-        <Button color="inherit" component={Link} to="/create" sx={hoverStyle}>new note</Button>
+        <Button color="inherit" component={Link} to="/" sx={style}>
+          home
+        </Button>
+        <Button color="inherit" component={Link} to="/notes" sx={style}>
+          notes
+        </Button>
+        <Button color="inherit" component={Link} to="/create" sx={style}>
+          new note
+        </Button>
       </Toolbar>
     </AppBar>
 

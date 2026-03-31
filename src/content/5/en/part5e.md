@@ -7,13 +7,13 @@ lang: en
 
 <div class="content">
 
-Our app's interface is currently quite basic:
+Our app's user interface is currently quite basic:
 
 ![](../../images/5/u1.png)
 
-We want to change that. Let's start with the app's navigation structure:
+We want to change that. Let's start with the app's navigation structure.
 
-It is very common for web apps to have a navigation bar that allows users to switch between different views within the app. Our note-taking app could include a home page
+It is very common for web apps to have a navigation bar that allows users to switch between different views within the app. Our note-taking app could include a home page:
 
 ![](../../images/5/u6.png)
 
@@ -25,7 +25,7 @@ as well as a page for creating notes:
 
 ![](../../images/5/u8.png)
 
-[In an old-school web application](/part0#traditional-web-application), switching between pages displayed by the application involved the browser sending a new HTTP GET request to the server and then rendering the HTML code returned by the server, which corresponded to the new view.
+[In an old-school web application](/en/part0/fundamentals_of_web_apps#traditional-web-applications), switching between pages displayed by the application involved the browser sending a new HTTP GET request to the server and then rendering the HTML code returned by the server, which corresponded to the new view.
 
 In single-page applications, however, you are actually on the same page the entire time, and JavaScript code executed in the browser creates the illusion of different "pages." If HTTP requests are made when changing views, they are used solely to fetch JSON-formatted data that may be required to display the new view.
 
@@ -71,7 +71,7 @@ const App = () => {
 }
 ```
 
-However, this method is not optimal: the website’s URL remains the same even when you’re on a different view. Each view should have its own URL, though, so that users can, for example, bookmark pages. Furthermore, the browser’s back button does not work logically if the pages do not have their own addresses; that is, clicking back does not take you to the previously viewed view of the application but somewhere else entirely.
+However, this method is not optimal: the website’s URL remains the same even when you’re on a different view. Each view should have its own URL, though, so that users can, for example, bookmark pages. Furthermore, the browser’s back button does not work logically if the pages do not have their own addresses; that is, clicking the back button does not take you to the previously viewed view of the application but somewhere else entirely.
 
 ### React Router
 
@@ -97,7 +97,7 @@ const Home = () => {
 export default Home
 ```
 
-We’ll extract the app’s previous main view into its own component, but move the handling of the notes state outside the component:
+We’ll extract the app’s previous main view (that was in the component <i>App</i>) into its own component, but move the handling of the notes state outside the component:
 
 ```js
 // list of notes passed as a parameter
@@ -172,9 +172,9 @@ const App = () => {
 export default App
 ```
 
-Routing—that is, the conditional rendering of components based on the browser’s <i>URL</i>—is enabled by placing components as children of the [Router](https://reactrouter.com/api/declarative-routers/Router) component, i.e., inside <i>Router</i> tags.
+Routing, that is, the conditional rendering of components based on the browser’s <i>URL</i>, is enabled by placing components as children of the [Router](https://reactrouter.com/api/declarative-routers/Router) component, i.e., inside <i>Router</i> tags.
 
-First, the application’s navigation bar is defined using the [Link](https://reactrouter.com/api/components/Link) component. The <i>to</i> attribute specifies how the browser’s URL is changed when the link is clicked:
+First, the application’s navigation bar is defined using the [Link](https://reactrouter.com/api/components/Link) components. The <i>to</i> attribute specifies how the browser’s URL is changed when the link is clicked:
 
 ```js
 <div>
@@ -206,9 +206,9 @@ When you click "notes" in the navigation bar, the address in the browser's addre
 
 ![](../../images/5/u3.png)
 
-On a normal web page, changing the address in the browser’s address bar causes the page to reload. However, when using React Router, this does not happen; instead, routing is handled entirely via JavaScript on the frontend.
-
 Similarly, when you click "new note," the URL becomes <i>create</i>, and the <i>NoteForm</i> component is rendered.
+
+On a normal web page, changing the address in the browser’s address bar causes the page to reload. However, when using React Router, this does not happen, instead, routing is handled entirely via JavaScript on the frontend.
 
 The Router component we use is [BrowserRouter](https://reactrouter.com/en/main/router-components/browser-router):
 
@@ -320,7 +320,7 @@ const Note = ({ notes, toggleImportance }) => {
 export default Note
 ```
 
-Unlike before, the <i>Note</i> component now receives all notes as props via the <i>all</i> parameter, and it can access the unique part of the URL—specifically, the <i>id</i> of the note to be displayed—using the React Router function [useParams](https://reactrouter.com/api/hooks/useParams). 
+Unlike before, the <i>Note</i> component now receives <i>all notes</i> via the <i>notes</i> prop, and it can access the unique part of the URL, specifically, the <i>id</i> of the note to be displayed, using the React Router function [useParams](https://reactrouter.com/api/hooks/useParams). 
 
 ### useNavigate
 
@@ -328,7 +328,7 @@ The backend already supports deleting notes. To implement this, let’s add a bu
 
 ![](../../images/5/u5.png)
 
-Let’s add a handler to the <i>App</i> component that performs the deletion, which is passed to the <i>Note</i> component:
+Let’s add a handler to the <i>App</i> component that performs the deletion, and pass it to the <i>Note</i> component:
 
 ```js
 const App = () => {
@@ -346,7 +346,8 @@ const App = () => {
 
       <Routes>
         <Route path="/notes/:id" element={
-          <Note notes={notes}
+          <Note 
+            notes={notes}
             toggleImportanceOf={toggleImportanceOf}
             deleteNote={deleteNote} // highlight-line
           />
@@ -399,9 +400,9 @@ const Note = ({ notes, toggleImportanceOf, deleteNote }) => { // highlight-line
 export default Note
 ```
 
-When a note is deleted, the user is navigated back to the page listing all notes. This is done by calling the function returned by React Router’s [useNavigate](https://reactrouter.com/api/components/Navigate) method with the desired URL: <i>navigate('/notes')</i>.
+When a note is deleted, the user is navigated back to the page listing all notes. This is done by calling the function returned by React Router’s [useNavigate](https://reactrouter.com/api/components/Navigate) with the desired URL: <i>navigate('/notes')</i>.
 
-Functions from the React Router library we use [useParams](https://reactrouter.com/api/hooks/useParams) and [useNavigate](https://reactrouter.com/api/components/Navigate) are both hook functions, just like, for example, the useState and useEffect we’ve used many times. As we recall from Part 1, there are certain [rules](/part1/more-complex-state-react-debugging#hook-rules) associated with using hook functions.
+Functions [useParams](https://reactrouter.com/api/hooks/useParams) and [useNavigate](https://reactrouter.com/api/components/Navigate) from the React Router library, are both hook functions, just like, for example, the useState and useEffect we’ve used many times. As we recall from Part 1, there are certain [rules](/en/part1/a_more_complex_state_debugging_react_apps#rules-of-hooks) associated with using hook functions.
 
 Let’s also modify the <i>NoteForm</i> component so that after adding a new note, the user is navigated to the page containing all notes:
 
@@ -462,14 +463,7 @@ const Note = ({ note, id, toggleImportanceOf, deleteNote }) => {  // highlight-l
   const id = useParams().id
   const navigate = useNavigate()
 
-  const label = note.important ? 'make not important' : 'make important'
-
-  const handleDelete = () => {
-    if (window.confirm(`Delete note "${note.content}"?`)) {
-      deleteNote(id)
-      navigate('/notes')
-    }
-  }
+  // ...
 
   return (
     <li className="note">
@@ -546,7 +540,7 @@ const App = () => {
 }    
 ```
 
-Every time the <i>App</i> component is rendered—which, in practice, happens whenever the URL in the browser's address bar changes—the following command is executed
+Every time the <i>App</i> component is rendered (which, in practice, happens whenever the URL in the browser's address bar changes) the following command is executed
 
 ```js
 const match = useMatch('/notes/:id')
@@ -592,11 +586,11 @@ The current code for the app is available in its entirety on [GitHub](https://gi
 
 <div class="tasks">
 
-### Tasks 5.24–5.29.
+### Exercises 5.24–5.29.
 
 #### 5.24: routed blogs, step1
 
-Add React Router to the application so that clicking the links in the navigation bar allows you to control which view is displayed.
+Add React Router to the blogs application so that clicking the links in the navigation bar allows you to control which view is displayed.
 
 At the root of the application, i.e., the path _/_, a list of all blogs is displayed:
 
@@ -610,7 +604,7 @@ If the user is logged in, a logout button appears in the navigation bar:
 
 ![](../../images/5/l3.png)
 
-After logging in and out, the user is shown the page listing all blogs.
+After logging in and out, the user should be directed to the page that lists all blogs.
 
 At this stage, you don’t need to worry about creating blogs yet.
 
@@ -632,18 +626,18 @@ Create a new view for creating a new blog, which logged-in users can access via 
 
 ![](../../images/5/l6.png)
 
-Adding a new blog and deleting an existing blog should redirect the user to the All Blogs view
+Adding a new blog and deleting an existing blog should redirect the user to the all blogs view
 
 #### 5.28: routed blogs, step4
 
 The app’s usability and appearance are now better than before. Unfortunately, some of the tests have broken. 
 
-Now modify the unit tests for the single blog view created in Vitest as follows
-- Blog information and the number of likes are displayed to unauthenticated users; buttons are not displayed
+Now modify the tests for the single blog view created in Vitest as follows
+- Blog information and the number of likes are displayed to unauthenticated users, buttons are not displayed
 - Authenticated users who are not the blog’s creator are shown only the like button
 - The blog’s creator is also shown the delete button
 
-#### 5.29: routed blogs, step4
+#### 5.29: routed blogs, step5
 
 Next up is fixing the end-to-end tests created with Playwright. The tests we wrote earlier are completely broken, and we’ll have to make major changes to them. 
 
@@ -660,21 +654,21 @@ So, sorting blogs by likes is not being tested right now.
 
 <div class="content">
 
-In Part 2, we already looked at two ways to add styles: the old-school [single CSS](/part2#adding-styles) file and [inline styles](/part2/adding-styles-to-a-react-app#inline-styles). In this section, we’ll look at a few more ways.
+### UI libraries
 
-### Pre-built UI style libraries
+In Part 2, we already looked at two ways to add styles: the old-school [single CSS](/en/part2/adding_styles_to_react_app) file and [inline styles](/en/part2/adding_styles_to_react_app#inline-styles). In this section, we’ll look at a few more ways.
 
-One approach to defining an app’s styles is to use a pre-built “UI framework,” or, in other words, a UI style library.
+One approach to defining an app’s styles is to use a “UI framework,” or, in other words, a UI style library.
 
-The first UI framework to gain widespread popularity was [Bootstrap](https://getbootstrap.com/), developed by Twitter, which is likely still the most widely used UI framework. Recently, UI frameworks have been popping up like mushrooms after rain. The selection is so vast that it’s not even worth trying to make an exhaustive list here.
+The first UI framework to gain widespread popularity was [Bootstrap](https://getbootstrap.com/), developed by Twitter. During the past handful of years, UI frameworks have been popping up like mushrooms after rain. The selection is so vast that it’s not even worth trying to make an exhaustive list here.
 
-Many UI frameworks include predefined themes for web applications as well as "components," such as buttons, menus, and tables. The term "component" is written in quotes above because it does not refer to the same thing as a React component. Most often, UI frameworks are used by including the framework’s CSS style sheets and JavaScript code in the application.
+Many UI frameworks include predefined themes for web applications as well as "components", such as buttons, menus, and tables. The term "component" is written in quotes above because it does not quite refer to the same thing as a React component. Most often, UI frameworks are used by including the framework’s CSS style sheets and JavaScript code in the application.
 
-Many UI frameworks have been adapted into React-friendly versions, where the “components” defined by the UI framework have been converted into React components. For example, there are a couple of React versions of Bootstrap, the most popular of which is [React-Bootstrap](https://react-bootstrap.github.io/).
+Many UI frameworks have been adapted into React-friendly versions, where the "components" defined by the UI framework have been converted into React components. For example, there are a couple of React versions of Bootstrap, the most popular of which is [React-Bootstrap](https://react-bootstrap.github.io/).
 
-Instead of Bootstrap, let’s next look at what is perhaps the most popular UI framework right now: the React library [MaterialUI](https://mui.com/), which implements Google’s “design language” [Material Design](https://material.io/). 
+Instead of Bootstrap, let’s next look at what is perhaps the most popular UI framework right now: the React library [MaterialUI](https://mui.com/), which implements Google’s [Material Design](https://material.io/) design language. 
 
-Install the library:
+Let us install the library:
 
 ```bash
 npm install @mui/material @emotion/react @emotion/styled
@@ -697,7 +691,7 @@ const App = () => {
 
 #### Table
 
-Let's start with the <i>NoteList</i> component and render the list of notes [as a table](https://mui.com/material-ui/react-table/#simple-table), which also displays the user who created each note:
+Let's start with the <i>NoteList</i> component and render the list of notes as a [table](https://mui.com/material-ui/react-table/#simple-table), which also displays the user who created each note:
 
 ```js
 import { useState, useEffect } from 'react'
@@ -728,7 +722,9 @@ const NoteList = ({ notes }) => {
             {notes.map(note => (
               <TableRow key={note.id}>
                 <TableCell>
-                  <Link to={`/notes/${note.id}`}>{note.content}</Link>
+                  <Link to={`/notes/${note.id}`}>
+                    {note.content}
+                  </Link>
                 </TableCell>
                 <TableCell>
                   {note.user.name}
@@ -777,7 +773,9 @@ const NoteForm = ({ createNote }) => {
           onChange={event => setNewNote(event.target.value)}
         />
         <div>
-          <Button type="submit" variant="contained" style={{ marginTop: 10 }}>save</Button>
+          <Button type="submit" variant="contained" style={{ marginTop: 10 }}>
+            save
+          </Button>
         </div>
       </form>
     </div>
@@ -873,7 +871,7 @@ Alert has a sleek design:
 
 #### Navigation Menu
 
-The navigation menu is implemented using the [AppBar](https://mui.com/components/app-bar/) component
+The navigation menu is implemented using the [AppBar](https://mui.com/components/app-bar/) component.
 
 If we apply the example from the documentation directly  
 
@@ -901,7 +899,7 @@ By defining
 </Button>
 ```
 
-The _Button_ component is rendered such that its root component is the _Link_ component from the react-router-dom library, to which the _to_ prop—which specifies the path—is passed.  
+The <i>Button</i> component is rendered such that its root component is the <i>Link</i> component from the <i>react-router-dom</i> library, to which the <i>to</i> prop, which specifies the path, is passed.  
 
 The complete code for the navigation bar is as follows
 
@@ -917,20 +915,26 @@ The complete code for the navigation bar is as follows
 
 and the result looks just as we want:
 
-![](../../images/5/u15.png)
+![](../../images/5/u16.png)
 
 However, we notice that when the mouse is moved over the navigation bar, the hover indicator is too subtle. Let’s fix this by defining a slightly better background color for these situations: 
 
 ```js
-const hoverStyle = { '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }
+const style = { '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }
 
 return (
   <Container>
     <AppBar position="static">
       <Toolbar>
-        <Button color="inherit" component={Link} to="/" sx={hoverStyle}>home</Button>
-        <Button color="inherit" component={Link} to="/notes" sx={hoverStyle}>notes</Button>
-        <Button color="inherit" component={Link} to="/create" sx={hoverStyle}>new note</Button>
+        <Button color="inherit" component={Link} to="/" sx={style}>
+          home
+        </Button>
+        <Button color="inherit" component={Link} to="/notes" sx={style}>
+          notes
+        </Button>
+        <Button color="inherit" component={Link} to="/create" sx={style}>
+          new note
+        </Button>
       </Toolbar>
     </AppBar>
 
@@ -949,9 +953,9 @@ The current code for the app is available in its entirety on [GitHub](https://gi
 
 In addition to what we’ve already seen, there are [other ways](https://blog.bitsrc.io/5-ways-to-style-react-components-in-2019-30f1ccc2b5b) to apply styles to a React app.
 
-The [styled-components](https://www.styled-components.com/) library, which utilizes ES6’s [tagged template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) syntax, offers an interesting approach to defining styles. [styled-components](https://www.styled-components.com/) library, which utilizes ES6’s [tagged template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) syntax.
+The [styled-components](https://www.styled-components.com/) library, which utilizes ES6’s [tagged template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) syntax, offers an interesting approach to defining styles. 
 
-[Install](https://styled-components.com/docs/basics#installation) styled-components and use it to make a few stylistic changes to the note-taking app (the version before installing MaterialUI). First, let’s create two style definitions for the components we’ll be using:
+Let us [install](https://styled-components.com/docs/basics#installation) styled-components and use it to make a few stylistic changes to the note-taking app (the version before installing MaterialUI). First, let’s create two style definitions for the components we’ll be using:
 
 ```js
 import styled from 'styled-components'
@@ -973,7 +977,7 @@ const Input = styled.input`
 
 The code creates versions of the HTML elements <i>button</i> and <i>input</i> that are styled, and assigns them to the variables <i>Button</i> and <i>Input</i>.
 
-The syntax for defining styles is quite interesting, as CSS definitions are placed inside backtick quotes.
+The syntax for defining styles is quite interesting, as CSS definitions are placed inside backtick quotes. This is the ES6’s [tagged template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) syntax.
 
 The defined components function like normal <i>button</i> and <i>input</i> elements, and are used in the application in the usual way:
 
@@ -1023,7 +1027,7 @@ const Footer = styled.div`
 `
 ```
 
-Let's implement the new components in the application:
+The new components can now be used in the application:
 
 ```js
 const App = () => {
@@ -1073,9 +1077,9 @@ Styled-Components has been steadily gaining popularity lately, and it currently 
 
 <div class="tasks">
 
-### Tasks 5.30–5.32
+### Exercises 5.30–5.32
 
-Next, let’s improve the styles of the blog app using either MaterialUI or Styled Components.
+Next, improve the styles of the blog app using either MaterialUI or Styled Components.
 
 #### 5.30: styled blogs, step 1
 
@@ -1089,7 +1093,6 @@ Creating a new blog:
 
 ![](../../images/5/l11.png)
 
-
 #### 5.31: styled blogs, step2
 
 Now style the app's navigation bar and the component that displays notifications. The result might look something like this:
@@ -1102,9 +1105,6 @@ Customize the appearance of the single blog display component as you see fit. He
 
 ![](../../images/5/l14.png)
 
-
-This was the last task of the section and it's time to push the code to GitHub and mark the completed tasks in the [exercise submission system](https://studies.cs.helsinki.fi/stats/courses/fullstackopen).
-
+This was the last exercise of the section and it's time to push the code to GitHub and mark the completed exercises in the [exercise submission system](https://studies.cs.helsinki.fi/stats/courses/fullstackopen).
 
 </div>
-
