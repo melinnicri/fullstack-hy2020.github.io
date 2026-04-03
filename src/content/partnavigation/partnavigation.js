@@ -38,9 +38,9 @@ module.exports = {
     },
     6: {
       a: 'Flux-arkkitehtuuri ja Zustand',
-      b: 'Monta reduseria',
-      c: 'Redux-sovelluksen kommunikointi palvelimen kanssa',
-      d: 'React Query, useReducer ja context',
+      b: 'Monimutkaisempi tila, fetch',
+      c: 'React Query, useReducer ja context',
+      d: 'Redux (legacy)',
     },
     7: {
       a: 'React Router',
