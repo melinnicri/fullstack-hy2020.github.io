@@ -700,8 +700,6 @@ const Note = ({ note }) => (
 
 Lisätään vielä sovellukseen mahdollisuus muistiinpanon tärkeyden muuttamiseen. Komponentti on muutoksen jälkeen seuraava:
 
-
-
 ```js
 import { useNoteActions } from './store'
 
