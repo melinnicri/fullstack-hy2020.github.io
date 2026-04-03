@@ -764,7 +764,7 @@ Toteutetaan nyt uusi versio ensimmäisen osan anekdoottien äänestyssovellukses
 Jos kloonaat projektin olemassaolevan Git-repositorion sisälle, <i>poista kloonatun sovelluksen Git-konfiguraatio:</i>
 
 ```bash
-cd redux-anecdotes  // mene kloonatun repositorion hakemistoon
+cd zustand-anecdotes  // mene kloonatun repositorion hakemistoon
 rm -rf .git
 ```
 
@@ -777,11 +777,11 @@ npm run dev
 
 Kun teet seuraavat tehtävät, tulisi sovelluksen näyttää seuraavalta:
 
-![Sovellus renderöi anekdootit. Jokaisen anekdootin yhteydessä myös tieto sen saamien äänien määrästä sekä nappi "vote" anekdootin äänestämiselle](../../images/6/3.png)
+![Sovellus renderöi anekdootit. Jokaisen anekdootin yhteydessä myös tieto sen saamien äänien määrästä sekä nappi "vote" anekdootin äänestämiselle](../../images/6/u2.png)
 
 #### 6.2: anekdootit, step1
 
-Toteuta mahdollisuus anekdoottien äänestämiseen. Äänien määrä tulee tallettaa Redux-storeen.
+Toteuta mahdollisuus anekdoottien äänestämiseen. Äänien määrä tulee tallettaa Zustand-storeen.
 
 #### 6.3: anekdootit, step2
 
@@ -789,17 +789,9 @@ Tee sovellukseen mahdollisuus uusien anekdoottien lisäämiselle.
 
 Voit pitää lisäyslomakkeen aiemman esimerkin tapaan [ei-kontrolloituna](/osa6/flux_arkkitehtuuri_ja_zustand#ei-kontrolloitu-lomake).
 
-#### 6.4: anekdootit, step3
+#### 6.5: anekdootit, step3
 
-Huolehdi siitä, että anekdootit pysyvät äänten mukaisessa suuruusjärjestyksessä.
-
-#### 6.5: anekdootit, step4
-
-Eriytä uuden anekdootin luominen omaksi komponentikseen nimeltään <i>AnecdoteForm</i>. Siirrä kaikki anekdootin luomiseen liittyvä logiikka uuteen komponenttiin.
-
-#### 6.6: anekdootit, step5
-
-Eriytä anekdoottilistan näyttäminen omaksi komponentikseen nimeltään <i>AnecdoteList</i>. Siirrä kaikki anekdoottien äänestämiseen liittyvä logiikka uuteen komponenttiin.
+Eriytä uuden anekdootin luominen omaksi komponentikseen nimeltään <i>AnecdoteForm</i> ja Eriytä anekdoottilistan näyttäminen omaksi komponentikseen nimeltään <i>AnecdoteList</i>.
 
 Tämän tehtävän jälkeen komponentin <i>App</i> pitäisi näyttää seuraavalta:
 
@@ -811,12 +803,19 @@ const App = () => {
   return (
     <div>
       <h2>Anecdotes</h2>
-      <AnecdoteForm />
       <AnecdoteList />
+      <AnecdoteForm />
     </div>
   )
 }
 
 export default App
 ```
+
+#### 6.3: anekdootit, step4
+
+Huolehdi siitä, että anekdootit pysyvät äänten mukaisessa suuruusjärjestyksessä.
+
+**HUOM** tässä tehtävässä kannattanee hyödyntää funktiota [Array.toSorted](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toSorted), joka ei järjestä alkuperäistä taulukkoa vaan luo siitä järjestetyn kopion. Tämä sen takia, että Zustand-tilaa ei saa muuttaa!
+
 </div>

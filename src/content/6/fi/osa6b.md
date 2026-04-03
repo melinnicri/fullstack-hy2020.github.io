@@ -192,11 +192,11 @@ Sovelluksen tämänhetkinen koodi on kokonaisuudessaan [GitHubissa](https://gith
 
 <div class="tasks">
 
-### Tehtävä 6.7
+### Tehtävä 6.6
 
 Jatketaan tehtävässä 6.3 aloitetun Reduxia käyttävän anekdoottisovelluksen parissa.
 
-#### 6.7 anekdootit, step6
+#### 6.6 anekdootit, step5
 
 Toteuta sovellukseen näytettävien anekdoottien filtteröiminen:
 
@@ -224,8 +224,6 @@ const Filter = () => {
 
 export default Filter
 ```
-
-
 
 </div>
 
@@ -640,27 +638,25 @@ Sovelluksen lopullinen koodi on [GitHubissa](https://github.com/fullstack-hy2020
 
 </div>
 
-
 <div class="tasks">
 
-### Tehtävät 6.14.-6.15.
+### Tehtävät 6.7.-6.n.
 
-#### 6.14 anekdootit ja backend, step1
+#### 6.7 anekdootit, step6
 
 Hae sovelluksen käynnistyessä anekdootit JSON Serverillä toteutetusta backendistä. Käytä HTTP-pyynnön tekemiseen Fetch APIa.
 
 Backendin alustavan sisällön saat esim. [täältä](https://github.com/fullstack-hy2020/misc/blob/master/anecdotes.json).
 
-#### 6.15 anekdootit ja backend, step2
+#### 6.8 anekdootit, step7
 
 Muuta uusien anekdoottien luomista siten, että anekdootit talletetaan backendiin. Hyödynnä toteutuksessasi jälleen Fetch APIa.
 
-
-#### 6.18 anekdootit ja backend, step5
+#### 6.9 anekdootit, step8
 
 Äänestäminen ei vielä talleta muutoksia backendiin. Korjaa tilanne Redux Thunk ‑kirjastoa ja Fetch APIa hyödyntäen.
 
-#### 6.12 anekdootit, step10
+#### 6.10 anekdootit, step9
 
 Sovelluksessa on valmiina komponentin <i>Notification</i> runko:
 
@@ -683,18 +679,18 @@ const Notification = () => {
 export default Notification
 ```
 
-Laajenna komponenttia siten, että se renderöi Redux-storeen talletetun viestin. Tee toiminnallisuutta varten oma reduceri ja hyödynnä jälleen Redux Toolkitin <em>createSlice</em>-funktiota.
+Laajenna komponenttia siten, että se renderöi Zustand-storeen talletetun viestin. Tee toiminnallisuutta varten oma reduceri.
 
 Tässä vaiheessa sovelluksen ei vielä tarvitse osata käyttää <i>Notification</i>-komponenttia järkevällä tavalla, vaan riittää että sovellus toimii ja näyttää <i>notificationReducerin</i> alkuarvoksi asettaman viestin.
 
-#### 6.13 anekdootit, step11
+#### 6.11 anekdootit, step11
 
 Laajenna sovellusta siten, että se näyttää <i>Notification</i>-komponentin avulla viiden sekunnin ajan, kun sovelluksessa äänestetään tai luodaan uusia anekdootteja:
 
 ![Äänestyksen yhteydessä näytetään notifikaatio: you voted 'if it hurts, do it more often'](../../images/6/8eb.png)
 
 
-#### 6.19 anekdootit ja backend, step6
+#### 6.12 anekdootit step12
 
 Notifikaatioiden tekeminen on nyt hieman ikävää, sillä se edellyttää kahden actionin tekemistä ja _setTimeout_-funktion käyttöä:
 
@@ -714,5 +710,12 @@ dispatch(setNotification(`you voted '${anecdote.content}'`, 10))
 Ensimmäisenä parametrina on renderöitävä teksti ja toisena notifikaation näyttöaika sekunneissa.
 
 Ota paranneltu notifikaatiotapa käyttöön sovelluksessasi.
+
+</div>
+
+<div class="content">
+
+Zustand-storejen testaaminen...
+
 
 </div>
