@@ -49,13 +49,11 @@ const InfoBanner = ({ visible, onHide }) => {
       <div style={textStyle}>
         <div style={{ marginBottom: 20 }}>
           <div style={{ marginBottom: 10 }}>
-            Material of Part 12 has been moved to <a style={linkStyle} href="https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-containers">https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-containers</a>
+            <strong>Significant changes comming to this part in near future!</strong> Redux will be replaced by Zustand.
+            If you have already started the part, finnish it quickly. If not, wait for a couple of days.
           </div>
           <div style={{ marginBottom: 10 }}>
-            The content and exercises are still same, there is a change how exercises are submitted.
-          </div>
-          <div>
-            The old content is still found <a style={linkStyle} href="https://github.com/fullstack-hy2020/fullstack-hy2020.github.io/tree/7599b17c02b056fcad4f12d8708f0e07980b7564/src/content/12">here</a>. 
+            The new version is expected to be online 5th or 6th April. The content on Redux shall stay accessible.
           </div>
         </div>
       </div>
