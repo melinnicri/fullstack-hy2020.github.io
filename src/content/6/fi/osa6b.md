@@ -7,6 +7,10 @@ lang: fi
 
 <div class="content">
 
+
+
+
+
 Jatketaan muistiinpanosovelluksen yksinkertaistetun [Redux-version](/osa6/flux_arkkitehtuuri_ja_redux#redux-muistiinpanot) laajentamista.
 
 Sovelluskehitystä helpottaaksemme laajennetaan reduceria siten, että storelle määritellään alkutila, jossa on pari muistiinpanoa:

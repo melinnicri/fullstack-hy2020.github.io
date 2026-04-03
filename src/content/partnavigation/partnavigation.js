@@ -37,7 +37,7 @@ module.exports = {
       e: 'React router, tyylikirjastot',
     },
     6: {
-      a: 'Flux-arkkitehtuuri ja Redux',
+      a: 'Flux-arkkitehtuuri ja Zustand',
       b: 'Monta reduseria',
       c: 'Redux-sovelluksen kommunikointi palvelimen kanssa',
       d: 'React Query, useReducer ja context',
@@ -101,7 +101,7 @@ module.exports = {
       e: 'React Router, UI frameworks',
     },
     6: {
-      a: 'Flux-architecture and Redux',
+      a: 'Flux-architecture and Zustand',
       b: 'Many reducers',
       c: 'Communicating with server in a Redux application',
       d: 'React Query, useReducer and the context',
