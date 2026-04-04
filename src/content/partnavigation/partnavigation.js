@@ -102,9 +102,9 @@ module.exports = {
     },
     6: {
       a: 'Flux-architecture and Zustand',
-      b: 'Many reducers',
-      c: 'Communicating with server in a Redux application',
-      d: 'React Query, useReducer and the context',
+      b: 'Complex state, fetch, testing',
+      c: 'React Query, useReducer ja context',
+      d: 'Redux (legacy)',
     },
     7: {
       a: 'React Router',

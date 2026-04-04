@@ -42,14 +42,14 @@ const useNoteStore = create((set) => ({
 
 Toteutetaan sovellukseen näytettävien muistiinpanojen filtteröinti, jonka avulla näytettäviä muistiinpanoja voidaan rajata. Filtterin toteutus tapahtuu [radiopainikkeiden](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio) avulla:
 
-![Sivun alussa lomake muistiinpanon lisäämiseen (syötekenttä ja nappi add). Tämän jälkeen radiopainikevalinta mitkä muistiinpanot näytetään, vaihtoehdot all, important ja noimportant. Näiden alle renderöidän kaikki muistiinpanot ja niiden yhteyteen teksti important jos muistiinpano merkattu tärkeäksi. ](../../images/6/u1.png)
+![Sivun alussa lomake muistiinpanon lisäämiseen (syötekenttä ja nappi add). Tämän jälkeen radiopainikevalinta mitkä muistiinpanot näytetään, vaihtoehdot all, important ja nonimportant. Näiden alle renderöidään kaikki muistiinpanot ja niiden yhteyteen teksti important jos muistiinpano merkattu tärkeäksi. ](../../images/6/u1.png)
 
-Herää kysymys, miten filtterin tilanhallinta kannattaisi hoitaa. Vaihtoehtoja on käytännössä kaksi: tehdään filterille erillinen store Zustandilla, tai lisätään se samaan tilaan. Kumpikin näistä ratkaisuista on perusteltavissa. Internetistä löytyvät [parhaat käytänteet](https://tkdodo.eu/blog/working-with-zustand#keep-the-scope-of-your-store-small) kehottavat pitämään toisistaan täysin erilliset asiat erillisissä storeissa. Muistiinpanojen lista ja filtteröinti ovat kuitenkin sen verran sidoksissa toisiinsa, että päädymme sijoittamaan molemmat samaan storeen:
+Herää kysymys, miten filtterin tilanhallinta kannattaisi hoitaa. Vaihtoehtoja on käytännössä kaksi: tehdään filterille erillinen store Zustandilla, tai lisätään se olemasaolevaan storeen. Kumpikin näistä ratkaisuista on perusteltavissa. Internetistä löytyvät [parhaat käytänteet](https://tkdodo.eu/blog/working-with-zustand#keep-the-scope-of-your-store-small) kehottavat pitämään toisistaan täysin erilliset asiat erillisissä storeissa. Muistiinpanojen lista ja filtteröinti ovat kuitenkin sen verran sidoksissa toisiinsa, että päädymme sijoittamaan molemmat samaan storeen:
 
 ```js
 const useNoteStore = create((set) => ({
   notes: initialNotes,
-  filter: 'all',
+  filter: 'all', // highlight-line
   actions: {
     add: note => set(
       state => ({ notes: state.notes.concat(note) })
@@ -112,7 +112,7 @@ Komponentti <i>App</i> renderöi filtterin:
 const App = () => (
   <div>
     <NoteForm />
-    <VisibilityFilter />
+    <VisibilityFilter /> // highlight-line
     <NoteList />
   </div>
 )
@@ -126,19 +126,19 @@ import Note from './Note'
 
 const NoteList = () => {
   const notes = useNotes()
-  const filter = useFilter() // highhlight-line
+  const filter = useFilter() // highlight-line
 
-  // highhlight-start
+  // highlight-start
   const notesToShow = notes.filter(note => {
     if (filter === 'important') return note.important
     if (filter === 'nonimportant') return !note.important
     return true
   })
-  // highhlight-end
+  // highlight-end
 
   return (
     <ul>
-      {notesToShow.map(note => ( // highhlight-line
+      {notesToShow.map(note => ( // highlight-line
         <Note key={note.id} note={note} />
       ))}
     </ul>
@@ -146,7 +146,7 @@ const NoteList = () => {
 }
 ```
 
-Parempi ratkaisuun päädytään jos filtteröintilogiikka sisällytetään suoraan storen funktiossa  <i>useNotes</i>:
+Parempaan ratkaisuun päädytään jos filtteröintilogiikka sisällytetään suoraan storen funktioon <i>useNotes</i>:
 
 ```js
 import { create } from 'zustand'
@@ -190,6 +190,9 @@ const NoteList = () => {
 
 Ratkaisu on elegantti! 
 
+> #### Mahdollinen vaihtoehtoinen ratkaisu
+>
+> Eräs vaihtoehto olisi toteuttaa filtteröinti suoraan selektorifunktion sisällä, jolloin sekä muistiinpanot että filtteri luettaisiin yhdellä <i>useNoteStore</i>-kutsulla:
 >
 >```js
 >export const useNotes = () => useNoteStore(({ notes, filter }) => {
@@ -199,9 +202,11 @@ Ratkaisu on elegantti!
 >})
 >```
 >
->Mutta se ei kuitenkaan toimi, sovellus hajoaa kun yritetään rajoittaa näytettävät >muistiinpanot ainoastaan tärkeisiin.
+> Tämä tie kuitenkaan toimi, vaan johtaa loputtomaan uudelleenrenderöintisilmukkaan, kun filtteriä vaihdetaan. 
 >
->Korjaus on onneksi helppo kunhan sen vain keksii:
+> Syy on seuraava: Zustand vertaa selektorin paluuarvoa <i>===</i>-operaattorilla. Koska <i>notes.filter(...)</i> luo joka renderöinnillä uuden taulukon, React tulkitsee sen aina uudeksi tilaksi ja käynnistää uuden renderöinnin, joka taas luo uuden taulukon, ja niin edelleen.
+>
+> Korjaus on lisätä [useShallow](https://zustand.docs.pmnd.rs/reference/hooks/use-shallow), joka korvaa <i>===</i>-vertailun "matalalla" vertailulla eli se ainoastaan vertaa taulukon alkioita yksitellen. Jos sisältö ei ole muuttunut, se palauttaa vanhan taulukon viitteen, jolloin React näkee tilan samana kuin aiemmin eikä renderöi komponenttia uudelleen.
 >
 >```js
 >import { useShallow } from 'zustand/react/shallow'
@@ -215,11 +220,9 @@ Ratkaisu on elegantti!
 >}))
 >```
 >
->Syy ongelmalle on seuraava: ilman funktion <i>useShallow</i> Zustand vertaa selektorin paluuarvoa ===-operaattorilla. Koska <i>notes.filter(...)</i> luo joka renderöinnillä uuden taulukon, React tulkitsee sen aina uudeksi tilaksi ja renderöi komponentin uudelleen loputtomasti.
->
-><i>useShallow</i> korvaa ===-vertailun "matalalla" vertailulla, eli se vertaa >taulukon alkioita yksitellen. Jos sisältö ei ole muuttunut, se palauttaa vanhan >taulukon viitteen uuden sijaan, jolloin React näkee tilan vakaana eikä renderöi >uudelleen.
+> Ratkaisu toimii, mutta se on hieman hankalampi ymmärtää. Käytämmekin materiaalissa aiemmin esitettyä kahden erillisen <i>useNoteStore</i>-kutsun versiota.
 
-Sovelluksen tämänhetkinen koodi on kokonaisuudessaan [GitHubissa](https://github.com/fullstack-hy2020/redux-notes/tree/part6-3), branchissa <i>part6-3</i>.
+Sovelluksen tämänhetkinen koodi on kokonaisuudessaan [GitHubissa](https://github.com/fullstack-hy2020/zustand-notes/tree/part6-3), branchissa <i>part6-3</i>.
 
 </div>
 
@@ -311,7 +314,7 @@ Ohjelmistokehityksessä joudutaan usein pohtimaan, kannattaako jokin toiminnalli
 
 Olemme käyttäneet HTTP-pyyntöjen tekemiseen kurssin aiemmissa osissa [Axios](https://axios-http.com/docs/intro)-kirjastoa. Tutustutaan nyt vaihtoehtoiseen tapaan tehdä HTTP-pyyntöjä natiivia [Fetch APIa](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) hyödyntäen.
 
-On tyypillistä, että ulkoinen kirjasto kuten <i>Axios</i> on toteutettu hyödyntäen muita ulkoisia kirjastoja. Esimerkiksi jos Axioksen asentaa projektiin komennolla _npm install axios_, konsoliin tulostuu: 
+On tyypillistä, että ulkoinen kirjasto kuten <i>Axios</i> on toteutettu hyödyntäen muita ulkoisia kirjastoja. Esimerkiksi jos Axioksen asentaa projektiin komennolla <i>npm install axios</i>, konsoliin tulostuu: 
 
 ```bash
 $ npm install axios
@@ -328,7 +331,7 @@ Komento asentaisi projektiin siis Axios-kirjaston lisäksi yli 20 muuta npm-pake
 
 <i>Fetch API</i> tarjoaa samankaltaisen tavan tehdä HTTP-pyyntöjä kuin Axios, mutta Fetch APIn käyttäminen ei vaadi ulkoisten kirjastojen asentamista. Sovelluksen ylläpito helpottuu, kun päivitettäviä kirjastoja on vähemmän, ja myös tietoturva paranee, koska sovelluksen mahdollinen hyökkäyspinta-ala pienenee. Sovellusten tietoturvaa ja ylläpitoa sivutaan kurssin [osassa 7](https://fullstackopen.com/osa7/luokkakomponentit_sekalaista#react-node-sovellusten-tietoturva).
 
-Pyyntöjen tekeminen tapahtuu käytännössä käyttämällä _fetch()_-funktiota. Käytettävässä syntaksissa on jonkin verran eroja verrattuna Axiokseen. Huomaamme myös pian, että Axios on huolehtinut joistakin asioista puolestamme ja helpottanut elämäämme. Käytämme nyt kuitenkin Fetch APIa, koska se on laajasti käytetty natiiviratkaisu, joka jokaisen Full Stack -kehittäjän on syytä tuntea.
+Pyyntöjen tekeminen tapahtuu käytännössä käyttämällä <i>fetch()</i>-funktiota. Käytettävässä syntaksissa on jonkin verran eroja verrattuna Axiokseen. Huomaamme myös pian, että Axios on huolehtinut joistakin asioista puolestamme ja helpottanut elämäämme. Käytämme nyt kuitenkin Fetch APIa, koska se on laajasti käytetty natiiviratkaisu, joka jokaisen Full Stack -kehittäjän on syytä tuntea.
 
 ### Datan hakeminen palvelimelta
 
@@ -351,9 +354,9 @@ const getAll = async () => {
 export default { getAll }
 ```
 
-Tutkitaan _getAll_-metodin toteutusta tarkemmin. Muistiinpanot haetaan backendistä nyt kutsumalla _fetch()_-funktiota, jolle on annettu argumentiksi backendin URL-osoite. Pyynnön tyyppiä ei ole erikseen määritelty, joten _fetch_ toteuttaa oletusarvoisen toiminnon eli GET-pyynnön.
+Tutkitaan <i>getAll</i>-funktion toteutusta tarkemmin. Muistiinpanot haetaan backendistä nyt kutsumalla <i>fetch()</i>-funktiota, jolle on annettu argumentiksi backendin URL-osoite. Pyynnön tyyppiä ei ole erikseen määritelty, joten <i>fetch</i> toteuttaa oletusarvoisen toiminnon eli GET-pyynnön.
 
-Kun vastaus on saapunut, tarkistetaan pyynnön onnistuminen vastauksen kentästä _response.ok_ ja heitetään tarvittaessa virhe:
+Kun vastaus on saapunut, tarkistetaan pyynnön onnistuminen vastauksen kentästä <i>response.ok</i> ja heitetään tarvittaessa virhe:
 
 ```js
 if (!response.ok) {
@@ -361,9 +364,9 @@ if (!response.ok) {
 }
 ```
 
-Attribuutti _response.ok_ saa arvon _true_, jos pyyntö on onnistunut eli jos vastauksen statuskoodi on välillä 200-299. Kaikilla muilla statuskoodeilla, esimerkiksi 404 tai 500, se saa arvon _false_. 
+Attribuutti <i>response.ok</i> saa arvon <i>true</i>, jos pyyntö on onnistunut eli jos vastauksen statuskoodi on välillä 200-299. Kaikilla muilla statuskoodeilla, esimerkiksi 404 tai 500, se saa arvon <i>false</i>. 
 
-Huomaa, että _fetch_ ei automaattisesti heitä virhettä, vaikka vastauksen statuskoodi olisi esimerkiksi 404. Virheenkäsittely tulee toteuttaa manuaalisesti, kuten olemme nyt tehneet.
+Huomaa, että <i>fetch</i> ei automaattisesti heitä virhettä, vaikka vastauksen statuskoodi olisi esimerkiksi 404. Virheenkäsittely tulee toteuttaa manuaalisesti, kuten olemme nyt tehneet.
 
 Jos pyyntö on onnistunut, vastauksen sisältämä data muunnetaan JSON-muotoon:
 
@@ -371,9 +374,9 @@ Jos pyyntö on onnistunut, vastauksen sisältämä data muunnetaan JSON-muotoon:
 const data = await response.json()
 ```
 
-_fetch_ ei siis automaattisesti muunna vastauksen mukana mahdollisesti olevaa dataa JSON-muotoon, vaan muunnos tulee tehdä manuaalisesti. On myös hyvä huomata, että _response.json()_ on asynkroninen metodi, eli sen kanssa tulee käyttää <i>await</i>-avainsanaa.
+<i>fetch</i> ei siis automaattisesti muunna vastauksen mukana mahdollisesti olevaa dataa JSON-muotoon, vaan muunnos tulee tehdä manuaalisesti. On myös hyvä huomata, että <i>response.json()</i> on asynkroninen funktio, eli sen kanssa tulee käyttää <i>await</i>-avainsanaa.
 
-Suoraviivaistetaan koodia vielä hieman palauttamalla suoraan metodin _response.json()_ palauttama data:
+Suoraviivaistetaan koodia vielä hieman palauttamalla suoraan funktion <i>response.json()</i> palauttama data:
 
 ```js
 const getAll = async () => {
@@ -407,9 +410,11 @@ Toteutetaan muistiinpanojen alustus <i>App</i>-komponentiin, eli kuten yleensä 
 const App = () => {
   const { initialize } = useNoteActions()
 
+ // highlight-start
   useEffect(() => {
     noteService.getAll().then(notes => initialize(notes))
   }, [initialize])
+ // highlight-end
 
   return (
     <div>
@@ -421,16 +426,15 @@ const App = () => {
 }
 ```
 
+Muistiinpanot haetaan palvelimelta siis käyttäen määrittelemäämme <i>getAll()</i>-function ja tallennetaan sitten storen funktiolla <i>initialize</i> . Toiminnot tehdään <i>useEffect</i>-hookissa eli ne suoritetaan App-komponentin ensimmäisen renderöinnin yhteydessä.
 
-Muistiinpanot haetaan palvelimelta siis käyttäen määrittelemäämme _getAll()_-metodia ja tallennetaan sitten storen funktiolla <i>initialize</i> . Toiminnot tehdään <i>useEffect</i>-hookissa eli ne suoritetaan App-komponentin ensimmäisen renderoinnin yhteydessä.
+Tutkitaan vielä tarkemmin erästä pientä yksityiskohtaa. Olemme lisänneet <i>initialize</i>-funktion <i>useEffect</i>-hookin riippuvuustaulukkoon. Jos yritämme käyttää tyhjää riippuvuustaulukkoa, ESLint antaa seuraavan varoituksen: <i>React Hook useEffect has a missing dependency: 'initialize'</i>. Mistä on kyse?
 
-Tutkitaan vielä tarkemmin erästä pientä yksityiskohtaa. Olemme lisänneet <i>initialize</i>-funktion <i>useEffect</i>-hookin riippuvuustaulukkoon. Jos yritämme käyttää tyhjää riippuvuustaulukkoa, ESLint antaa seuraavan varoituksen: <i>React Hook useEffect has a missing dependency: 'dispatch'</i>. Mistä on kyse?
-
-Koodi toimisi loogisesti täysin samoin, vaikka käyttäisimme tyhjää riippuvuustaulukkoa, koska <i>initialize</i> viittaa samaan funktioon koko ohjelman suorituksen ajan. On kuitenkin hyvän ohjelmointikäytännön mukaista lisätä _useEffect_-hookin riippuvuuksiksi kaikki sen käyttämät muuttujat ja funktiot, jotka on määritelty kyseisen komponentin sisällä. Näin voidaan välttää yllättäviä bugeja.
+Koodi toimisi loogisesti täysin samoin, vaikka käyttäisimme tyhjää riippuvuustaulukkoa, koska <i>initialize</i> viittaa samaan funktioon koko ohjelman suorituksen ajan. On kuitenkin hyvän ohjelmointikäytännön mukaista lisätä <i>useEffect</i>-hookin riippuvuuksiksi kaikki sen käyttämät muuttujat ja funktiot, jotka on määritelty kyseisen komponentin sisällä. Näin voidaan välttää yllättäviä bugeja.
 
 ### Datan lähettäminen palvelimelle
 
-Toteutetaan seuraavaksi toiminnallisuus uuden muistiinpanon lähettämiseksi palvelimelle. Pääsemme samalla harjoittelemaan, miten POST-pyyntö tehdään _fetch()_-metodia käyttäen.
+Toteutetaan seuraavaksi toiminnallisuus uuden muistiinpanon lähettämiseksi palvelimelle. Pääsemme samalla harjoittelemaan, miten POST-pyyntö tehdään <i>fetch()</i>-funktiota käyttäen.
 
 Laajennetaan tiedostossa <i>src/services/notes.js</i> olevaa palvelimen kanssa kommunikoivaa koodia seuraavasti:
 
@@ -466,7 +470,7 @@ const createNew = async (content) => {
 export default { getAll, createNew } // highlight-line
 ```
 
-Tutkitaan _createNew_-metodin toteutusta tarkemmin. _fetch()_-funktion ensimmäinen parametri määrittelee URL-osoitteen, johon pyyntö tehdään. Toinen parametri on olio, joka määrittelee muut pyynnön yksityiskohdat, kuten pyynnön tyypin, otsikot ja pyynnön mukana lähetettävän datan. Voimme selkeyttää koodia vielä hieman tallentamalla pyynnön yksityiskohdat määrittelevän olion erilliseen <i>options</i>-apumuuttujaan:
+Tutkitaan <i>createNew</i>-funktion toteutusta tarkemmin. <i>fetch()</i>-funktion ensimmäinen parametri määrittelee URL-osoitteen, johon pyyntö tehdään. Toinen parametri on olio, joka määrittelee muut pyynnön yksityiskohdat, kuten pyynnön tyypin, otsikot ja pyynnön mukana lähetettävän datan. Voimme selkeyttää koodia vielä hieman tallentamalla pyynnön yksityiskohdat määrittelevän olion erilliseen <i>options</i>-apumuuttujaan:
 
 ```js
 const createNew = async (content) => {
@@ -491,8 +495,8 @@ const createNew = async (content) => {
 Tutkitaan <i>options</i>-oliota tarkemmin:
 
 - <i>method</i> määrittelee pyynnön tyypin, joka tässä tapauksessa on <i>POST</i>
-- <i>headers</i> määrittelee pyynnön otsikot. Liitämme pyyntöön otsikon _'Content-Type': 'application/json'_, jotta palvelin tietää, että pyynnön mukana oleva data on JSON-muotoista, ja osaa käsitellä pyynnön oikein
-- <i>body</i> sisältää pyynnön mukana lähetettävän datan. Kentään ei voi suoraan sijoittaa JavaScript-oliota, vaan se tulee ensin muuntaa JSON-merkkijonoksi kutsumalla funktiota _JSON.stringify()_
+- <i>headers</i> määrittelee pyynnön otsikot. Liitämme pyyntöön otsikon <i>'Content-Type': 'application/json'</i>, jotta palvelin tietää, että pyynnön mukana oleva data on JSON-muotoista, ja osaa käsitellä pyynnön oikein
+- <i>body</i> sisältää pyynnön mukana lähetettävän datan. Kenttään ei voi suoraan sijoittaa JavaScript-oliota, vaan se tulee ensin muuntaa JSON-merkkijonoksi kutsumalla funktiota <i>JSON.stringify()</i>
 
 Kuten GET-pyynnön kanssa, myös nyt vastauksen statuskoodi tutkitaan virheiden varalta:
 
@@ -502,13 +506,13 @@ if (!response.ok) {
 }
 ```
 
-Jos pyyntö onnistuu, <i>JSON Server</i> palauttaa juuri luodun muistiinpanon, jolle se on generoinut myös yksilöllisen <i>id</i>:n. Vastauksen sisältämä data tulee kuitenkin vielä muuntaa JSON-muotoon metodilla _response.json()_: 
+Jos pyyntö onnistuu, <i>JSON Server</i> palauttaa juuri luodun muistiinpanon, jolle se on generoinut myös yksilöllisen <i>id</i>:n. Vastauksen sisältämä data tulee kuitenkin vielä muuntaa JSON-muotoon funktiolla <i>response.json()</i>: 
 
 ```js
 return await response.json()
 ```
 
-Muutetaan sitten sovelluksemme <i>NoteForm</i>-komponenttia siten, että uusi muistiinpano lähetetään backendiin. Komponentin metodi _addNote_ muuttuu hiukan:
+Muutetaan sitten sovelluksemme <i>NoteForm</i>-komponenttia siten, että uusi muistiinpano lähetetään backendiin. Komponentin funktio <i>addNote</i> muuttuu hiukan:
 
 ```js
 import { useNoteActions } from './store'
@@ -538,7 +542,7 @@ export default NoteForm
 
 Kun uusi muistiinpano luodaan backendiin kutsumalla funktiota <i>createNew()</i>, saadaan paluuarvona muistiinpanoa kuvaava olio, jolle backend on generoinut <i>id</i>:n.
 
-Sovelluksen tämänhetkinen koodi on kokonaisuudessaan [GitHubissa](https://github.com/fullstack-hy2020/redux-notes/tree/part6-4), branchissa <i>part6-4</i>.
+Sovelluksen tämänhetkinen koodi on kokonaisuudessaan [GitHubissa](https://github.com/fullstack-hy2020/zustand-notes/tree/part6-4), branchissa <i>part6-4</i>.
 
 ### Asynkroniset actionit
 
@@ -548,10 +552,10 @@ Haluammekin, että <i>App</i> alustaa sovelluksen tilan seuraavasti:
 
 ```js
 const App = () => {
-  const { initialize } = useNoteActions()
+  const { initialize } = useNoteActions()  // highlight-line
 
   useEffect(() => {
-    initialize()
+    initialize()  // highlight-line
   }, [initialize])
 
   return (
@@ -569,12 +573,12 @@ const App = () => {
 
 ```js
 const NoteForm = () => {
-  const { add } = useNoteActions()
+  const { add } = useNoteActions()  // highlight-line
 
   const addNote = async (e) => {
     e.preventDefault()
     const content = e.target.note.value
-    await add(content)
+    await add(content) // highlight-line
     e.target.reset()
   }
 
@@ -597,12 +601,12 @@ const useNoteStore = create((set) => ({
   notes: [],
   filter: '',
   actions: {
-    add: async (content) => {
-      const newNote = await noteService.createNew(content)
+    add: async (content) => {  // highlight-line
+      const newNote = await noteService.createNew(content)  // highlight-line
       set(state => ({ notes: state.notes.concat(newNote) }))
     },
-    initialize: async () => {
-      const notes = await noteService.getAll()
+    initialize: async () => {  // highlight-line
+      const notes = await noteService.getAll()  // highlight-line
       set(() => ({ notes }))
     },
     // ...
@@ -650,7 +654,9 @@ const useNoteStore = create((set) => ({
     // highlight-start
     toggleImportance: async (id) => {
       const note = useNoteStore.getState().notes.find(n => n.id === id)
-      const updated = await noteService.update(id, { ...note, important: !note.important })
+      const updated = await noteService.update(
+        id, { ...note, important: !note.important }
+      )
       set(state => ({
         notes: state.notes.map(n => n.id === id ? updated : n)
       }))
@@ -665,7 +671,7 @@ const useNoteStore = create((set) => ({
 }))
 ```
 
-Uudessa funktiossa on eräs huomioinarvoinen seikka. Funktio saa parametrina muistinpanon id:n. Backendiin on kuitenkin lähetettävä muuttettu muistiinpano. Se saadaan selville kutsumalla storen funktiota <i>getState</i>:
+Uudessa funktiossa on eräs huomionarvoinen seikka. Funktio saa parametrina muistiinpanon id:n. Backendiin on kuitenkin lähetettävä muutettu muistiinpano. Se saadaan selville kutsumalla storen funktiota <i>getState</i>:
 
 ```js
 const note = useNoteStore.getState().notes.find(n => n.id === id)
@@ -673,7 +679,7 @@ const note = useNoteStore.getState().notes.find(n => n.id === id)
 
 Zustand-storeilla on myös joukko muita [apufunktioita](https://zustand.docs.pmnd.rs/reference/apis/create#returns), mille saattaa olla joissain tilanteissa käyttöä. 
 
-Muutetaan kuitenkin vielä storen määrittelyä siten, että välitetään <i>createlle</i> annettavalle funktiolle myös parametri <i>get</i>, jonka kautta pääsemme sitten tarpeen tullen käsiksi tilan arvoihin:
+Muutetaan kuitenkin vielä storen määrittelyä siten, että välitetään <i>createlle</i> annettavalle funktiolle myös parametri <i>get</i>, jonka kautta pääsemme tarpeen tullen käsiksi tilan arvoihin:
 
 ```js
 const useNoteStore = create((set, get) => ({ // highlight-line
@@ -682,7 +688,9 @@ const useNoteStore = create((set, get) => ({ // highlight-line
   actions: {
     toggleImportance: async (id) => {
       const note = get().notes.find(n => n.id === id) // highlight-line
-      const updated = await noteService.update(id, { ...note, important: !note.important })
+      const updated = await noteService.update(
+        id, { ...note, important: !note.important }
+      )
       set(state => ({
         notes: state.notes.map(n => n.id === id ? updated : n)
       }))
@@ -692,7 +700,9 @@ const useNoteStore = create((set, get) => ({ // highlight-line
 }))
 ```
 
-Sovelluksen koodi on [GitHubissa](https://github.com/fullstack-hy2020/redux-notes/tree/part6-5) branchissa <i>part6-5</i>.
+Funktio <i>get</i> siis palauttaa storen sen hetkisen tilan. Eli esimerkiksi kutsu <i>get().notes</i> antaa storen tämänhetkiset muistiinpanot. Funktio <i>get</i> vastaa toiminnaltaan kutsua <i>useNoteStore.getState()</i>, mutta on idiomattisin tapa viitata storen tilaan storen omien funktioiden sisältä.
+
+Sovelluksen koodi on [GitHubissa](https://github.com/fullstack-hy2020/zustand-notes/tree/part6-5) branchissa <i>part6-5</i>.
 
 </div>
 
@@ -741,7 +751,7 @@ Laajenna sovellusta siten, että se näyttää <i>Notification</i>-komponentin a
 
 ![Äänestyksen yhteydessä näytetään notifikaatio: you voted 'if it hurts, do it more often'](../../images/6/8eb.png)
 
-Käytä notifikaation tilanhallintaan Zustandia. Notifikaatioita varten kannattanee tehdä oma Zustand store sillä notifikaation käyttö saattaa liittyä sovelluksen laajentuessa muuhunkin kuin anektootteihin, esimerkiksi käyttäjän kirjautumiseen.
+Käytä notifikaation tilanhallintaan Zustandia. Notifikaatioita varten kannattanee tehdä oma Zustand store sillä notifikaation käyttö saattaa liittyä sovelluksen laajentuessa muuhunkin kuin anekdootteihin, esimerkiksi käyttäjän kirjautumiseen.
 
 #### 6.11 anekdootit, step10
 
@@ -753,7 +763,11 @@ Huomaamme, että osa käyttäjien lisäämistä anekdooteista on huonoja. Toteut
 
 ### Middlewaret
 
-Zustand tukee ns. middlewareja, joiden avulla voidaan lisätä toiminnallisuutta storeihin. Middlewarefunktioiden muoto on hieman kryptinen. Seuraavassa on <i>logger</i>, joka tulostaa aina tilan vaihtuessa storen vanhan ja uuden tilan:
+Sovellusta kehittäessä törmää tilanteeseen, jossa on vaikea hahmottaa, miksi sovellus käyttäytyy odottamattomasti. Tila muuttuu jonkun action-funktion seurauksena, mutta on epäselvää, mikä kutsu muutti mitäkin ja missä järjestyksessä. Perinteinen konsolilokitus yksittäisistä funktioista auttaa vain rajallisesti.
+
+Zustand tukee ns. middlewareja, joiden avulla voidaan lisätä toiminnallisuutta storeihin läpinäkyvästi, ilman että itse storen logiikkaan tarvitsee koskea. Middlewaren idea on yksinkertainen: se "kietoutuu" storen ympärille ja voi reagoida jokaiseen tilanmuutoksen automaattisesti halutulla tavalla.
+
+Middlewarefunktioiden muoto on hieman kryptinen. Seuraavassa on <i>logger</i>, joka tulostaa aina tilan vaihtuessa storen vanhan ja uuden tilan:
 
 ```js
 const logger = (config) => (set, get) => config(
@@ -792,7 +806,28 @@ Käytännössä määrittelemämme middleware toimii siten, että se korvaa alku
   }
 ```
 
-joka sen tulostaa vanhan ja uuden tilan (joihin se pääsee käsiksi funktiolla <i>get</i>) konsoliin sen lisäksi että se kutsuu funktiota <i>set</i>. Toisena parametrina on vanha <i>get</i> muuttumattomana.
+joka tulostaa vanhan ja uuden tilan (joihin se pääsee käsiksi funktiolla <i>get</i>) konsoliin sen lisäksi että se kutsuu vanhaa funktiota <i>set</i>. Toisena parametrina on vanha <i>get</i> muuttumattomana.
+
+Zustandissa on myös valmis <i>devtools</i>-middleware, joka integroi storen selaimen [Redux DevTools](https://chromewebstore.google.com/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd) -laajennukseen. Devtools on kehitystyökaluna erittäin hyödyllinen, sillä sen avulla voi seurata tilan muutoksia graafisesti.
+
+Käyttöönotto on helppo tehdä:
+
+```js
+import { create } from 'zustand'
+import { devtools } from 'zustand/middleware' // highlight-line
+
+const useNoteStore = create(devtools((set, get) => ({ // highlight-line
+  notes: [],
+  filter: '',
+  actions: {
+    // ...
+  }
+}))) // highlight-line
+```
+
+Kun Redux DevTools -laajennus on asennettuna selaimeen, voidaan storen tilaa ja sen muutoksia tarkastella selaimen konsolista:
+
+![Redux DevTools -näkymä selaimessa: vasemmalla lista tilan muutoksista, oikealla tilan sisältö puumuodossa](../../images/6/u6.png)
 
 ### Zustand-storejen testaaminen
 
@@ -818,7 +853,7 @@ export const useCounterControls = () => useCounterStore(state => state.actions)
 export default useCounterStore // highlight-line
 ```
 
-Lisäsimme testejä varten määrittelyyn eksportin, jonka avulla testi pääsee käsiksi stroreen.
+Lisäsimme testejä varten määrittelyyn eksportin, jonka avulla testi pääsee käsiksi storeen.
 
 Asennetaan Vitest:
 
@@ -862,7 +897,7 @@ describe('counter store', () => {
 
 Testit ovat varsin suoraviivaiset, hyödyntävät storen funktiota [getState](https://zustand.docs.pmnd.rs/reference/apis/create#returns), joiden avulla ne pääsevät lukemaan storen tilaa, sekä suorittamaan storen funktiota.
 
-Ennen jokaista testiä store palautetaan alkutilaan <i>beforeEach</i>-lohkossa komennon storen funktion [setState](https://zustand.docs.pmnd.rs/reference/apis/create#returns) avulla.
+Ennen jokaista testiä store palautetaan alkutilaan <i>beforeEach</i>-lohkossa storen funktion [setState](https://zustand.docs.pmnd.rs/reference/apis/create#returns) avulla.
 
 Storen palauttaminen alkutilaan on tapauksessamme yksinkertaista. Aina ei välttämättä näin ole. Zustandin [dokumentaatio](https://zustand.docs.pmnd.rs/learn/guides/testing#vitest) neuvoo tavan, miten storeista voidaan luoda testejä varten versio, joka asetetaan automaattisesti alkutilaan ennen jokaista testiä. Tapa on kuitenkin sen verran monimutkainen ja meille tarpeeton, joten emme siihen nyt mene.
 
@@ -975,7 +1010,7 @@ act(() => {
 })
 ```
 
-Lopuksi tapahtuu testin ekpektatio:
+Lopuksi tapahtuu testin ekspektaatio:
 
 ```js
 expect(counter.current).toBe(0)
@@ -1000,7 +1035,7 @@ Zustand-laskurin testit sisältävä koodi löytyy [GitHubista](https://github.c
 
 ### Muistiinpanostoren testaaminen
 
-Muistiinpanosovelluksen storen testaaminen on hieman haastavampi tapaus, sillä store sisältää asynkronisia funktioita, jotka kutsuvat palvelina:
+Muistiinpanosovelluksen storen testaaminen on hieman haastavampi tapaus, sillä store sisältää asynkronisia funktioita, jotka kutsuvat palvelinta:
 
 ```js
 import { create } from 'zustand'
@@ -1045,7 +1080,7 @@ export const useFilter = () => useNoteStore((state) => state.filter)
 export const useNoteActions = () => useNoteStore((state) => state.actions)
 ```
 
-Tälläkertaa myös <i>useNotes</i> sisältää merkittävissä määrin logiikkaa, joten testaus lienee syytä tehdä hookien kautta React Testing Libraryllä.
+Tällä kertaa myös <i>useNotes</i> sisältää merkittävissä määrin logiikkaa, joten testaus lienee syytä tehdä hookien kautta React Testing Libraryllä.
 
 Asennetaan tarvittavat kirjastot:
 
@@ -1162,7 +1197,7 @@ vi.mock('./services/notes', () => ({
 }))
 ```
 
-[vi.mock](https://vitest.dev/api/vi.html#vi-mock) korvaa hakemiston <i>./services/notes</i> siltävän <i>noteServicen</i> omalla versiollaan, missä kaikki funktiot on korvattu [vi.fn](https://vitest.dev/api/vi.html#vi-fn) palauttamalla mock-funktiolla.
+[vi.mock](https://vitest.dev/api/vi.html#vi-mock) korvaa hakemiston <i>./services/notes</i> sisältävän <i>noteServicen</i> omalla versiollaan, missä kaikki funktiot on korvattu [vi.fn](https://vitest.dev/api/vi.html#vi-fn) palauttamalla mock-funktiolla.
 
 Ennen jokaista testiä store palautetaan alkutilaan ja mock-funktiot nollataan:
 
@@ -1205,7 +1240,7 @@ await act(async () => {
 
 Koska kyse on asynkronisesta funktiosta, tulee kutsun valmistumista odottaa komennolla <i>await</i>. 
 
-Lopuksi tewti varmistaa, että storen tilassa on sama lista muistinpanoja, mitä mockattu  <i>noteService.getAll</i> palautti:
+Lopuksi testi varmistaa, että storen tilassa on sama lista muistiinpanoja, mitä mockattu  <i>noteService.getAll</i> palautti:
 
 ```js
 const { result: notesResult } = renderHook(() => useNotes())
@@ -1246,7 +1281,7 @@ describe('useNotes filtering', () => {
 })
 ```
 
-Sovelluksen lopullinen koodi on [GitHubissa](https://github.com/fullstack-hy2020/redux-notes/tree/part6-6) branchissa <i>part6-6</i>.
+Sovelluksen lopullinen koodi on [GitHubissa](https://github.com/fullstack-hy2020/zustand-notes/tree/part6-6) branchissa <i>part6-6</i>.
 
 </div>
 
@@ -1258,15 +1293,15 @@ Sovelluksen lopullinen koodi on [GitHubissa](https://github.com/fullstack-hy2020
 
 Tee testi, joka varmistaa, että tila alustetaan niillä anekdooteilla, jotka backend palauttaa.
 
-#### 6.13 anekdootit, step13
+#### 6.13 anekdootit, step12
 
 Tee testi, joka varmistaa että anekdootit näyttävä komponentti saa anekdootit storelta äänten mukaan järjestettynä
 
-#### 6.14 anekdootit, step14
+#### 6.14 anekdootit, step13
 
-Tee testi, joka varmistaa, että oikein React komponentti saa oikein oikein filtteröidyn listan anekdooteista.
+Tee testi, joka varmistaa, että oikea React-komponentti saa oikein filtteröidyn listan anekdooteista.
 
-#### 6.15 anekdootit, step12
+#### 6.15 anekdootit, step14
 
 Tee testi, joka varmistaa, että äänestäminen korottaa anekdootin äänien määrää.
 

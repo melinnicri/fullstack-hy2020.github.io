@@ -5,6 +5,12 @@ letter: d
 lang: fi
 ---
 
+<div class="tasks">
+
+Tämä on kurssin jo käytöstä poistettu Reduxiin liittyvä materiaali. Voit jatkaa tämän matariaalin ja siinä olevien tehtävien tekemistä jos olet jo aloittanut osan tekemisen Reduxilla. Muussa tapauksessa kannattaa seurata uutta materiaalia. Tämä materiaali poistuu näkyvistä kesäkuusa 2026.
+
+</div>
+
 <div class="content">
 
 Olemme noudattaneet sovelluksen tilan hallinnassa Reactin suosittelemaa käytäntöä määritellä useiden komponenttien tarvitsema tila ja sitä käsittelevät funktiot sovelluksen komponenttirakenteen [ylimmissä](https://reactjs.org/docs/lifting-state-up.html) kompontenteissa. Usein suurin osa tilaa ja sitä käsittelevistä funktioista on määritelty suoraan sovelluksen juurikomponentissa ja välitetty propsien avulla niitä tarvitseville komponenteille. Tämä toimii johonkin pisteeseen saakka, mutta sovelluksen kasvaessa tilan hallinta muuttuu haasteelliseksi.
