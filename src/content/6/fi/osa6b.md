@@ -1252,22 +1252,22 @@ Sovelluksen lopullinen koodi on [GitHubissa](https://github.com/fullstack-hy2020
 
 <div class="tasks">
 
-### Tehtävät 6.12.-6.n
+### Tehtävät 6.12.-6.15.
 
 #### 6.12 anekdootit, step11
 
-Redux devtool, asenna selaimeen extensio
+Tee testi, joka varmistaa, että tila alustetaan niillä anekdooteilla, jotka backend palauttaa.
 
-#### 6.13 anekdootit, step12
+#### 6.13 anekdootit, step13
 
-testaa filter suoraan storesta
+Tee testi, joka varmistaa että anekdootit näyttävä komponentti saa anekdootit storelta äänten mukaan järjestettynä
 
-#### 6.14 anekdootit, step13
+#### 6.14 anekdootit, step14
 
-moar test
+Tee testi, joka varmistaa, että oikein React komponentti saa oikein oikein filtteröidyn listan anekdooteista.
 
-#### 6.15 anekdootit, step14
+#### 6.15 anekdootit, step12
 
-moar test2
+Tee testi, joka varmistaa, että äänestäminen korottaa anekdootin äänien määrää.
 
 </div>
