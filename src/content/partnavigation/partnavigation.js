@@ -38,7 +38,7 @@ module.exports = {
     },
     6: {
       a: 'Flux-arkkitehtuuri ja Zustand',
-      b: 'Monimutkaisempi tila, fetch',
+      b: 'Monimutkaisempi tila, fetch, testaaminen',
       c: 'React Query, useReducer ja context',
       d: 'Redux (legacy)',
     },
