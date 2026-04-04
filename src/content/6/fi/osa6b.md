@@ -831,7 +831,7 @@ Kun Redux DevTools -laajennus on asennettuna selaimeen, voidaan storen tilaa ja 
 
 ### Zustand-storejen testaaminen
 
-Tarkastellaan vielä lopuksi Zustand-storejen testausta Vitestillä.
+Tarkastellaan vielä lopuksi Zustand-storejen testaamista Vitestillä.
 
 Aloitetaan yksinkertaisuuden vuoksi laskurin storesta:
 
@@ -895,13 +895,15 @@ describe('counter store', () => {
 })
 ```
 
-Testit ovat varsin suoraviivaiset, hyödyntävät storen funktiota [getState](https://zustand.docs.pmnd.rs/reference/apis/create#returns), joiden avulla ne pääsevät lukemaan storen tilaa, sekä suorittamaan storen funktiota.
+Testit ovat varsin suoraviivaiset ja hyödyntävät storen funktiota [getState](https://zustand.docs.pmnd.rs/reference/apis/create#returns), joiden avulla ne pääsevät lukemaan storen tilaa sekä suorittamaan storen funktiota.
 
 Ennen jokaista testiä store palautetaan alkutilaan <i>beforeEach</i>-lohkossa storen funktion [setState](https://zustand.docs.pmnd.rs/reference/apis/create#returns) avulla.
 
-Storen palauttaminen alkutilaan on tapauksessamme yksinkertaista. Aina ei välttämättä näin ole. Zustandin [dokumentaatio](https://zustand.docs.pmnd.rs/learn/guides/testing#vitest) neuvoo tavan, miten storeista voidaan luoda testejä varten versio, joka asetetaan automaattisesti alkutilaan ennen jokaista testiä. Tapa on kuitenkin sen verran monimutkainen ja meille tarpeeton, joten emme siihen nyt mene.
+Storen palauttaminen alkutilaan on tapauksessamme yksinkertaista. Aina ei välttämättä näin ole. Zustandin [dokumentaatio](https://zustand.docs.pmnd.rs/learn/guides/testing#vitest) neuvoo tavan, miten storeista voidaan luoda testejä varten versio, joka asetetaan automaattisesti alkutilaan ennen jokaista testiä. Tapa on kuitenkin sen verran monimutkainen ja meille tarpeeton, että emme siihen nyt mene.
 
-Testit siis käyttävät storea suoraan. Jos storejen käyttöön on toteutettu custom hookeina monimutkaisempaa logiikkaa, saattaa olla tarpeen tehdä testit siten, että ne myös hyödyntävät hookkeja. Laskurissa storen käyttö tapahtuu hookien <i>useCounter</i> ja <i>useCounterControls</i> kautta:
+Testit siis käyttävät storea suoraan. Jos storejen käyttöön on toteutettu custom hookeina monimutkaisempaa logiikkaa, saattaa olla tarpeen tehdä testit siten, että ne myös hyödyntävät hookkeja.
+
+Laskurissa storen käyttö tapahtuu hookien <i>useCounter</i> ja <i>useCounterControls</i> kautta:
 
 
 ```js
@@ -1018,7 +1020,7 @@ expect(counter.current).toBe(0)
 
 Kuten huomaamme, päästäksemme hookiin itseensä käsiksi joudumme vielä ottamaan funktion <i>renderHook</i> palauttamasta oliosta kentän <i>current</i>, joka vastaa hookin nykyistä arvoa.
 
-> ### Mikä act?
+> #### Mikä on act?
 >
 > <i>act</i> on apufunktio, joka varmistaa että kaikki tilan päivitykset ja niiden aiheuttamat sivuvaikutukset on käsitelty loppuun ennen kuin testikoodi jatkuu.
 >
@@ -1026,7 +1028,7 @@ Kuten huomaamme, päästäksemme hookiin itseensä käsiksi joudumme vielä otta
 >
 >Ilman actia testi saattaisi tarkistaa tilan ennen kuin React on ehtinyt päivittää sen, jolloin testi epäonnistuisi tai antaisi väärän tuloksen.
 >
-> React Testing Library käärii monet toimintonsa (kuten fireEvent, userEvent) automaattisesti act:iin, mutta hookeja suoraan testattaessa se tarvitaan usein manuaalisesti, tai käyttämällä renderHook:in tarjoamaa actia.
+> React Testing Library käärii monet toimintonsa (kuten fireEvent, userEvent) automaattisesti act:iin, mutta hookeja suoraan testattaessa sitä on viisainta käyttää.
 
 Hookien kautta tapahtuva testaaminen käyttää React Testing Libraryä, ja 
 renderöi hookit oikeassa React-kontekstissa jsdomin avulla. Tämä lähestymistapa on huomattavasti hitaampi kuin suoraan storea käyttävät testit, eli jos hookit eivät sisällä kompleksista logiikkaa, voi olla riittävää suorittaa testit suoraan storea käyttäen.
@@ -1071,6 +1073,7 @@ const useNoteStore = create(set => ({
 export const useNotes = () => { 
   const notes = useNoteStore((state) => state.notes)
   const filter = useNoteStore((state) => state.filter)
+
   if (filter === 'important') return notes.filter(n => n.important)
   if (filter === 'nonimportant') return notes.filter(n => !n.important)
   return notes
@@ -1169,17 +1172,6 @@ describe('useNoteActions', () => {
     const { result: notesResult } = renderHook(() => useNotes())
     expect(notesResult.current[0].important).toBe(true)
   })
-
-  it('setFilter updates filter', () => {
-    const { result: actionsResult } = renderHook(() => useNoteActions())
-    const { result: filterResult } = renderHook(() => useFilter())
-
-    act(() => {
-      actionsResult.current.setFilter('important')
-    })
-
-    expect(filterResult.current).toBe('important')
-  })
 })
 ```
 
@@ -1208,7 +1200,7 @@ beforeEach(() => {
 })
 ```
 
-Jokaisen testin alussa mockatulle <i>noteServicelle</i> kerrotaan funktion [mockResolvedValue](https://vitest.dev/api/mock.html#mockresolvedvalue) kuinka sen tulee toimia testin kontekstissa:
+Jokaisen testin alussa mockatulle <i>noteServicelle</i> kerrotaan funktion [mockResolvedValue](https://vitest.dev/api/mock.html#mockresolvedvalue) avulla kuinka sen tulee toimia testin kontekstissa:
 
 ```js
 it('initialize loads notes from service', async () => {
@@ -1228,7 +1220,7 @@ it('initialize loads notes from service', async () => {
 })
 ```
 
-Aluksi testi määrittelee, että kutsuttaessa funktiota <i>noteService.getAll</i> palautetaan storelle taulukossa <i>mockNotes</i> olevat muistiinpanot.
+Aluksi testi siis määrittelee, että kutsuttaessa funktiota <i>noteService.getAll</i> palautetaan storelle taulukossa <i>mockNotes</i> olevat muistiinpanot.
 
 Testattava asia on funktion <i>initialize</i> kutsu:
 
@@ -1238,7 +1230,7 @@ await act(async () => {
 })
 ```
 
-Koska kyse on asynkronisesta funktiosta, tulee kutsun valmistumista odottaa komennolla <i>await</i>. 
+Koska kyse on asynkronisesta funktiosta, tulee kutsun valmistumista odottaa avainsanaa <i>await</i> käyttämällä. 
 
 Lopuksi testi varmistaa, että storen tilassa on sama lista muistiinpanoja, mitä mockattu  <i>noteService.getAll</i> palautti:
 
@@ -1280,6 +1272,8 @@ describe('useNotes filtering', () => {
   })
 })
 ```
+
+Tila alustetaan kahdella muistiinpanolla, joista toinen on tärkeä ja toinen ei. Kolme testitapausta tarkastavat, että <i>useNotes</i> palauttaa kaikilla filtterin arvoilla oikeat muistiinpanot.
 
 Sovelluksen lopullinen koodi on [GitHubissa](https://github.com/fullstack-hy2020/zustand-notes/tree/part6-6) branchissa <i>part6-6</i>.
 

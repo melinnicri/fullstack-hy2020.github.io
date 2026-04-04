@@ -1018,7 +1018,7 @@ expect(counter.current).toBe(0)
 
 As we can see, to access the hook itself we still need to take the <i>current</i> field from the object returned by <i>renderHook</i>, which corresponds to the hook's current value.
 
-> ### What is act?
+> #### What is act?
 >
 > <i>act</i> is a helper function that ensures all state updates and their side effects have been processed before the test code continues.
 >
@@ -1026,7 +1026,7 @@ As we can see, to access the hook itself we still need to take the <i>current</i
 >
 > Without act, a test might check the state before React has had time to update it, causing the test to fail or give incorrect results.
 >
-> React Testing Library wraps many of its functions (such as fireEvent, userEvent) in act automatically, but when testing hooks directly it is often needed manually, or by using the act provided by renderHook.
+> React Testing Library wraps many of its functions (such as fireEvent, userEvent) in act automatically, but when testing hooks directly it is usually needed.
 
 Testing via hooks uses React Testing Library and renders the hooks in a real React context using jsdom. This approach is considerably slower than tests that use the store directly, so if the hooks do not contain complex logic, it may be sufficient to run the tests using the store directly.
 
@@ -1070,6 +1070,7 @@ const useNoteStore = create(set => ({
 export const useNotes = () => { 
   const notes = useNoteStore((state) => state.notes)
   const filter = useNoteStore((state) => state.filter)
+
   if (filter === 'important') return notes.filter(n => n.important)
   if (filter === 'nonimportant') return notes.filter(n => !n.important)
   return notes
@@ -1168,17 +1169,6 @@ describe('useNoteActions', () => {
     const { result: notesResult } = renderHook(() => useNotes())
     expect(notesResult.current[0].important).toBe(true)
   })
-
-  it('setFilter updates filter', () => {
-    const { result: actionsResult } = renderHook(() => useNoteActions())
-    const { result: filterResult } = renderHook(() => useFilter())
-
-    act(() => {
-      actionsResult.current.setFilter('important')
-    })
-
-    expect(filterResult.current).toBe('important')
-  })
 })
 ```
 
@@ -1237,7 +1227,7 @@ await act(async () => {
 })
 ```
 
-Since this is an asynchronous function, the completion of the call must be awaited with the <i>await</i> command.
+Since this is an asynchronous function, the completion of the call must be awaited with the <i>await</i> keyword.
 
 Finally, the test verifies that the store's state contains the same list of notes that the mocked <i>noteService.getAll</i> returned:
 
@@ -1279,6 +1269,8 @@ describe('useNotes filtering', () => {
   })
 })
 ```
+
+The state is initialized with two notes, one of which is important and the other is not. The three test cases verify that <i>useNotes</i> returns the correct notes for all filter values.
 
 The application's final code is on [GitHub](https://github.com/fullstack-hy2020/zustand-notes/tree/part6-6) in the branch <i>part6-6</i>.
 
