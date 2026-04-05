@@ -13,8 +13,8 @@ import PropTypes from 'prop-types';
 import SkipToContent from './SkipToContent/SkipToContent';
 
 const BANNER_TO_KEY = 'part_09_changes';
-const BANNER2_TO_KEY = 'part_6_comming_changes';
 const BANNER3_TO_KEY = 'part_11_changes';
+const BANNER2_TO_KEY = 'part_6_changes';
 
 const Layout = (props) => {
   const { i18n } = useTranslation();

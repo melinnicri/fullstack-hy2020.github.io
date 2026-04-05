@@ -49,11 +49,10 @@ const InfoBanner = ({ visible, onHide }) => {
       <div style={textStyle}>
         <div style={{ marginBottom: 20 }}>
           <div style={{ marginBottom: 10 }}>
-            <strong>Significant changes comming to this part in near future!</strong> Redux will be replaced by Zustand.
-            If you have already started the part, finnish it quickly. If not, wait for a couple of days.
+            <strong>Significant changes in part 6:</strong> Redux has been replaced with Zustand.
           </div>
-          <div style={{ marginBottom: 10 }}>
-            The new version is expected to be online 5th or 6th April. The content on Redux shall stay accessible.
+          <div>
+          If you have already started the part with Redux, finnish it quickly, the React material stays online until June 2026.
           </div>
         </div>
       </div>

@@ -7,7 +7,7 @@ lang: en
 
 <div class="content">
 
-In addition to the eight exercises in the [React router](/en/part7/react_router) and [custom hooks](/en/part7/custom_hooks) sections of this seventh part of the course material, 13 exercises continue our work on the BlogList application that we worked on in parts four and five of the course material. Some of the following exercises are "features" that are independent of one another, meaning that there is no need to finish them in any particular order. You are free to skip over a part of the exercises if you wish to do so. Quite many of them are about applying the advanced state management technique (Redux, React Query and context) covered in [part 6](/en/part6).
+In addition to the eight exercises in the [React router](/en/part7/react_router) and [custom hooks](/en/part7/custom_hooks) sections of this seventh part of the course material, 13 exercises continue our work on the BlogList application that we worked on in parts four and five of the course material. Some of the following exercises are "features" that are independent of one another, meaning that there is no need to finish them in any particular order. You are free to skip over a part of the exercises if you wish to do so. Quite many of them are about applying the advanced state management technique (Zustand, React Query and context) covered in [part 6](/en/part6).
 
 If you do not want to use your BlogList application, you are free to use the code from the model solution as a starting point for these exercises.
 
@@ -29,33 +29,35 @@ Prettier is easy to integrate into the code editor so that when it is saved, it 
 
 Take Prettier to use in your app and configure it to work with your editor.
 
-### State Management: Redux
+### State Management: Zustand
 
-<i>There are two alternative versions to choose for exercises 7.10-7.13: you can do the state management of the application either using Redux or React Query and Context</i>. If you want to maximize your learning, you should do both versions!
+<i>There are two alternative versions to choose for exercises 7.10-7.13: you can do the state management of the application either using Zustand or React Query and Context</i>. If you want to maximize your learning, you should do both versions!
 
-#### 7.10: Redux, Step 1
+Note: if you completed part 6 using Redux, you can of course use Redux instead of Zustand in this exercise series!
 
-Refactor the application to use Redux to manage the notification data.
+#### 7.10: Zustand, Step 1
 
-#### 7.11: Redux, Step 2
+Refactor the application to use Zustand to manage the notification data.
+
+#### 7.11: Zustand, Step 2
 
 <i>Note</i> that this and the next two exercises are quite laborious but incredibly educational.
 
-Store the information about blog posts in the Redux store. In this exercise, it is enough that you can see the blogs in the backend and create a new blog.
+Store the information about blog posts in the Zustand store. In this exercise, it is enough that you can see the blogs in the backend and create a new blog.
 
 You are free to manage the state for logging in and creating new blog posts by using the internal state of React components.
 
-#### 7.12: Redux, Step 3
+#### 7.12: Zustand, Step 3
 
 Expand your solution so that it is again possible to like and delete a blog.
 
-#### 7.13: Redux, Step 4
+#### 7.13: Zustand, Step 4
 
-Store the information about the signed-in user in the Redux store.
+Store the information about the signed-in user in the Zustand store.
 
 ### State Management: React Query and Context
 
-<i>There are two alternative versions to choose for exercises 7.10-7.13: you can do the state management of the application either using Redux or React Query and Context</i>. If you want to maximize your learning, you should do both versions!
+<i>There are two alternative versions to choose for exercises 7.10-7.13: you can do the state management of the application either using Zustand or React Query and Context</i>. If you want to maximize your learning, you should do both versions!
 
 #### 7.10: React Query and Context step 1
 
@@ -77,7 +79,7 @@ Use the useReducer-hook and context to manage the data for the logged in user.
 
 ### Views
 
-The rest of the tasks are common to both the Redux and React Query versions.
+The rest of the tasks are common to both the Zustand and React Query versions.
 
 #### 7.14: Users view
 

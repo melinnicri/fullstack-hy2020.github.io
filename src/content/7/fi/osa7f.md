@@ -7,7 +7,7 @@ lang: fi
 
 <div class="content">
 
-Kurssin seitsemännessä osassa on lukujen [React Router](/osa7/react_router) ja [custom-hookit](/osa7/custom_hookit) kahdeksan tehtävän lisäksi 13 tehtävää, joissa jatketaan osissa 4 ja 5 tehtyä Bloglist-sovellusta. Osa seuraavassa olevista tehtävistä on toisistaan riippumattomia "featureita", eli tehtäviä ei tarvitse tehdä järjestyksessä, voit jättää myös osan toteuttamatta. Tehtävissä on melko suuressa roolissa [osassa 6](/osa6) käsiteltyjen edistyneempien tilanhallintamenetelmien (Redux, React Query ja context) soveltaminen.
+Kurssin seitsemännessä osassa on lukujen [React Router](/osa7/react_router) ja [custom-hookit](/osa7/custom_hookit) kahdeksan tehtävän lisäksi 13 tehtävää, joissa jatketaan osissa 4 ja 5 tehtyä Bloglist-sovellusta. Osa seuraavassa olevista tehtävistä on toisistaan riippumattomia "featureita", eli tehtäviä ei tarvitse tehdä järjestyksessä, voit jättää myös osan toteuttamatta. Tehtävissä on melko suuressa roolissa [osassa 6](/osa6) käsiteltyjen edistyneempien tilanhallintamenetelmien (Zustand, React Query ja Context API) soveltaminen.
 
 Voit ottaa pohjaksi oman sovelluksesi sijaan myös mallivastauksen koodin.
 
@@ -29,35 +29,37 @@ Prettier on helppo integroida suoraan editoriin siten, että editori muokkaa koo
 
 Ota sovellukseesi käyttöön Prettier, tee sille sopiva konfiguraatio sekä editori-integraatio.
 
-### Tilan hallinta: Redux
+### Tilan hallinta: Zustand
 
-<i>Tehtävistä 7.10-7.13 on valittavissa kaksi vaihtoehtoista versiota: voit tehdä sovelluksen tilanhallinnan joko käyttäen Reduxia tai React Queryä ja Contextia</i>. Jos haluat maksimoida oppimisen, voit tehdä molemmat versiot!
+<i>Tehtävistä 7.10-7.13 on valittavissa kaksi vaihtoehtoista versiota: voit tehdä sovelluksen tilanhallinnan joko käyttäen Zustandia tai React Queryä ja Context APIa</i>. Jos haluat maksimoida oppimisen, voit tehdä molemmat versiot!
 
-#### 7.10: Redux, step1
+Huom: jos teit osan 6 käyttäenn Reduxia, voit toki käyttää tässä tehtäväsarjassa Zustandin sijaan myös Reduxia!
 
-Siirry käyttämään React-komponenttien tilan sijaan Reduxia sovelluksen tilan hallintaan.
+#### 7.10: Zustand, step1
 
-Muuta tässä tehtävässä notifikaatio käyttämään Reduxia.
+Siirry käyttämään React-komponenttien tilan sijaan Zustandia sovelluksen tilan hallintaan.
 
-#### 7.11: Redux, step2
+Muuta tässä tehtävässä notifikaatio käyttämään Zustandia.
+
+#### 7.11: Zustand, step2
 
 <i>Tämä ja seuraava kaksi osaa ovat kohtuullisen työläitä, mutta erittäin opettavaisia.</i>
 
-Siirrä blogien tietojen talletus Reduxiin. Tässä tehtävässä riittää, että sovellus näyttää olemassa olevat blogit ja, että uuden blogin luominen onnistuu.
+Siirrä blogien tietojen talletus Zustandiin. Tässä tehtävässä riittää, että sovellus näyttää olemassa olevat blogit ja, että uuden blogin luominen onnistuu.
 
 Kirjautumisen ja uuden blogin luomisen lomakkeiden tilaa kannattaa hallita edelleen Reactin tilan avulla.
 
-#### 7.12: Redux, step3
+#### 7.12: Zustand, step3
 
 Laajenna ratkaisua siten, että blogien "liketys" ja poisto toimivat.
 
-#### 7.13: Redux, step4
+#### 7.13: Zustand, step4
 
-Siirrä myös kirjautuneen käyttäjän tietojen talletus Reduxiin.
+Siirrä myös kirjautuneen käyttäjän tietojen talletus Zustandiin.
 
 ### Tilan hallinta: React Query ja context
 
-<i>Tehtävistä 7.10-7.13 on valittavissa kaksi vaihtoehtoista versiota: voit tehdä sovelluksen tilanhallinnan joko käyttäen Reduxia tai React Queryä ja Contextia</i>.
+<i>Tehtävistä 7.10-7.13 on valittavissa kaksi vaihtoehtoista versiota: voit tehdä sovelluksen tilanhallinnan joko käyttäen Zustandia tai React Queryä ja Contextia</i>.
 
 #### 7.10: React Query ja context step1
 
@@ -79,7 +81,7 @@ Siirrä myös kirjautuneen käyttäjän tietojen hallinnointi tapahtumaan useRed
 
 ### Näkymät
 
-Loput tehtävät ovat yhteisiä sekä Redux- että React Query ‑versiota tekeville.
+Loput tehtävät ovat yhteisiä sekä Zustand- että React Query ‑versiota tekeville.
 
 #### 7.14: käyttäjien näkymä
 

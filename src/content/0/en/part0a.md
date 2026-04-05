@@ -331,11 +331,10 @@ Despite changes *all the submitted exercises remain valid*, and the course can b
 
 Recent major changes
 
+- Part 6 (th April): Redux replaced with Zustand, useReducer moved to chapter 7
 - Part 5 (31st March 2026): React Router and style libraries have been moved from Part 7 to this part
 - Parts 9, 11-13 (March 2026): content updated and material moved to new platform
 - Part 8: (3th January 2026) Apollo Server updated to v5. Apollo Client updated to v4. Refactoring backend code moved to part8c. Lot's of other small improvements.
-- Part 6 (12th October 2025): Jest replaced with Vitest. Axios replaced with Fetch API
-- Part 5 (21st August, 2025): React updated to version 19. PropTypes and forwardRef are no longer used. ESLint configurations updated
 - Part 4 (13th August, 2025): Express updated to version 5 and the express-async-errors library removed from part 4b
 
 ### Expanding on a previously completed course

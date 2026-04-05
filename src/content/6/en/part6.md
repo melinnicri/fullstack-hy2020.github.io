@@ -12,6 +12,7 @@ We will also look at the lighter state management approach directly supported by
 
 <i>Part updated 5th April 2026</i>
 - <i>Redux replaced with Zustand</i>
+- <i>useReducer moved to part 7</i>
 
 
 </div>
