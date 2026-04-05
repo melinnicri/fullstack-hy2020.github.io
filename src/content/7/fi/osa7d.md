@@ -7,21 +7,23 @@ lang: fi
 
 <div class="content">
 
-React oli alkuaikoina jonkin verran tunnettu siitä, että sovelluskehityksen työkalujen konfigurointi oli hyvin hankalaa. Tilanteen helpottamiseksi kehitettiin [Create React App](https://github.com/facebookincubator/create-react-app), joka poisti konfigurointiin liittyvät ongelmat. [Vite](https://vitejs.dev/), jota käytetään läpi tämän kurssin, on sittemmin syrjäyttänyt Create React Appin uusien React-sovellusten standardina.
+React oli alkuaikoina tunnettu siitä, että sovelluskehityksen työkalujen konfigurointi oli hyvin hankalaa. Tilanteen helpottamiseksi kehitettiin [Create React App](https://github.com/facebookincubator/create-react-app), joka poisti konfigurointiin liittyvät ongelmat. Tällä kurssilla käytettävä [Vite](https://vitejs.dev/) on sittemmin syrjäyttänyt Create React Appin uusien React-sovellusten konfiguroinnin standardina.
 
-Sekä Vite että Create React App käyttävät <i>bundlereita</i> varsinaiseen työhön. Tässä osiossa tarkastelemme lähemmin, mitä bundlerit oikeastaan tekevät, miten Vite toimii konepellin alla ja miten sitä voidaan konfiguroida eri tilanteisiin. Tutustumme lyhyesti myös [esbuildiin](https://esbuild.github.io/), matalan tason bundleriin, jota Vite itse käyttää sisäisesti – esbuildiin tutustuminen auttaa selventämään, mitä bundlaus perustavanlaatuisesti tarkoittaa.
+Sekä Vite että Create React App käyttävät <i>bundlereita</i> varsinaiseen työhön. Tässä osiossa tarkastelemme lähemmin, mitä bundlerit oikeastaan tekevät, miten Vite toimii konepellin alla ja miten sitä voidaan konfiguroida eri tilanteisiin. Tutustumme lyhyesti myös [esbuildiin](https://esbuild.github.io/), matalan tason bundleriin, jota Vite itse käyttää sisäisest.
 
 > #### Entä Webpack?
 >
->Webpack oli hallitseva bundleri suurimman osan 2010-luvusta ja sitä kohdataan edelleen vanhemmissa ja yritystason koodikannoissa. Myös tämä kurssi käsitteli Webpackia kevääseen 2026 asti.
+> [Webpack](https://webpack.js.org/) oli hallitseva bundleri suurimman osan 2010-luvusta ja se on edelleen vanhemmissa projekteissa. Myös tämä kurssi käsitteli Webpackia kevääseen 2026 asti.
 >
-> Jos työskentelet legacy-projektin parissa, on hyödyllistä tietää, että Webpack on olemassa ja käyttää samoja peruskäsitteitä (sisääntulopisteet, loaderit/pluginit, ulostulo). Uuden projektin käynnistämistä Webpackilla vuonna 2026 ei kuitenkaan suositella. Sen konfigurointi on monimutkaista, ja modernit työkalut kuten Vite tarjoavat huomattavasti paremman kehittäjäkokemuksen. Webpack-konfiguraatiota ei käsitellä tällä kurssilla.
+> Uuden projektin käynnistämistä Webpackilla vuonna 2026 ei kuitenkaan suositella. Sen konfigurointi on monimutkaista, ja modernit työkalut kuten Vite tarjoavat huomattavasti paremman kehittäjäkokemuksen. Webpack-konfiguraatiota ei käsitellä tällä kurssilla.
 
 ### Bundlaus
 
-Olemme toteuttaneet sovelluksiamme jakamalla koodin erillisiin moduuleihin, jotka on <i>importattu</i> niitä tarvitseviin paikkoihin. Vaikka ES6-moduulit on määritelty ECMAScript-standardissa, kaikki suoritusympäristöt eivät käsittele moduulipohjaista koodia automaattisesti. Jopa modernit selaimet hyötyvät siitä, että riippuvuudet on esikäsitelty ja optimoitu ennen toimitusta.
+Olemme toteuttaneet sovelluksia jakamalla koodin moduuleihin, joita on importattu niitä tarvitseviin paikkoihin. Vaikka ES6-moduulit ovatkin JavaScript-standardissa määriteltyjä, eivät vanhemmat selaimet vielä osaa käsitellä moduuleihin jaettua koodia.
 
-Tästä syystä moduuleihin jaettu koodi <i>bundlataan</i> tuotantoa varten, eli lähdekooditiedostot muunnetaan ja yhdistetään optimoiduksi tiedostojoukoksi, jonka selain voi ladata tehokkaasti. Kun aiemmissa osissa suoritimme komennon <i>npm run build</i>, Vite suoritti tämän bundlauksen. Tulos löytyy <i>dist</i>-hakemistosta:
+Tästä syystä moduuleihin jaettu koodi <i>bundlataan</i> tuotantoa varten, eli lähdekooditiedostot muunnetaan ja yhdistetään optimoiduksi yksittäiseksi, kaiken koodin sisältäväksi tiedostoksi.
+
+Kun aiemmissa osissa suoritimme komennon <i>npm run build</i>, Vite suoritti tämän bundlauksen. Tulos löytyy <i>dist</i>-hakemistosta:
 
 ```
 ├── assets
@@ -51,30 +53,32 @@ Juuressa oleva <i>index.html</i> lataa bundlatun JavaScriptin <i>script</i>-tagi
 </html>
 ```
 
-CSS bundlataan myös yhdeksi tiedostoksi.
+Kuten esimerkistä näemme, Vitellä tehdyssä sovelluksessa bundlataan JavaScriptin lisäksi sovelluksen CSS-määrittelyt tiedostoon <i>/assets/index-d526a0c5.csss</i>.
 
-Käytännössä bundlaus alkaa sisääntulopisteestä, joka on tyypillisesti <i>main.jsx</i>. Vite sisällyttää paitsi sisääntulopisteestä löytyvän koodin myös kaiken sen importtaaman – rekursiivisesti – kunnes koko riippuvuusgraafi on ratkaistu.
+Käytännössä bundlaus tapahtuu siten, että sovelluksen JavaScriptille määritellään alkupiste, joka on Vite-sovelluksissa tiedosto <i>main</i>.js, ja bundlauksen yhteydessä Vite ottaa mukaan kaiken koodin mitä alkupiste importtaa, importattujen koodien importtaamat koodit jne.
 
-Koska osa importatuista tiedostoista on paketteja kuten React, Redux ja Axios, bundlattu JavaScript-tiedosto sisältää myös jokaisen näistä kirjastoista.
+Koska osa importeista on kirjastoja kuten React, Redux tai Axios, bundlattuun JavaScript-tiedostoon tulee myös kaikkien näiden sisältö.
 
-> Ennen bundlereita vanha lähestymistapa perustui siihen, että index.html latasi kaikki sovelluksen erilliset JavaScript-tiedostot script-tagien avulla. Tämä heikensi suorituskykyä, koska jokaisen erillisen tiedoston lataaminen aiheuttaa ylimääräistä kuormaa. Tästä syystä nykyään suosittu tapa on bundlata koodi yhdeksi tiedostoksi. Bundlaus mahdollistaa myös optimoinnit kuten minifioinnin ja tree-shakingin (käyttämättömän koodin poistaminen).
+> Vanha tapa jakaa sovelluksen koodi moneen tiedostoon perustui siihen, että index.html latasi kaikki sovelluksen tarvitsemat erilliset JavaScript-tiedostot script-tagien avulla. Tämä on kuitenkin tehotonta, sillä jokaisen tiedoston lataaminen aiheuttaa pienen overheadin ja pääosin nykyään suositaankin koodin bundlaamista yksittäiseksi tiedostoksi.
 
 ### Miten Vite toimii
 
-Vitellä on kaksi selvästi erilaista toimintatilaa.
+Vitellä on kaksi selvästi erilaista toiminnallista moodia.
 
-**Kehitystila** (<i>npm run dev</i>) ei bundlaa koodiasi lainkaan. Sen sijaan Vite käynnistää kehitysserverin, joka tarjoaa lähdekooditiedostosi natiiveina ES-moduuleina suoraan selaimelle, jolloin selain ratkaisee importit itse. Tästä syystä käynnistys on lähes välitöntä riippumatta projektin koosta.
-Poikkeuksena: kolmannen osapuolen riippuvuudet node_modulesista esibundlataan esbuildilla ennen serverin käynnistystä. Tämä ratkaisee kaksi ongelmaa: monet npm-paketit ovat edelleen CommonJS-muodossa (jota selaimet eivät voi kuluttaa natiivisti), ja jotkut kirjastot koostuvat sadoista pienistä sisäisistä tiedostoista, jotka muuten aiheuttaisivat satoja erillisiä pyyntöjä. esbuild muuntaa ja yhdistelee ne, tallentaa tuloksen levylle välimuistiin, ja seuraavat käynnistykset ovat lähes välittömiä.
+**Kehitystila** (<i>npm run dev</i>) ei bundlaa koodiasi lainkaan. Sen sijaan Vite käynnistää kehitysserverin, joka tarjoaa lähdekooditiedostot natiiveina ES-moduuleina suoraan selaimelle, jotka moderni selain pystyy importata. Tästä syystä Vite käynnistyy erittäin nopeasti projektin koosta riippumatta.
 
-**Tuotantotila** (<i>npm run build</i>) käyttää [Rollup](https://rollupjs.org/)ia bundlaukseen esbuildsin hoitaessa edelleen muita tehtäviä kuten transpilointia (JSX, TypeScript) ja minifiointia. Rollup on suunniteltu alusta alkaen ES-moduuleille, mikä tekee siitä poikkeuksellisen hyvän <i>tree-shakingin</i> suhteen – tekniikka, joka analysoi staattisesti, mitä eksportteja kustakin moduulista oikeasti käytetään, ja poistaa loput lopullisesta bundlesta. Esimerkiksi jos importtaat vain yhden apufunktion suuresta kirjastosta, tree-shaking varmistaa, että muu kirjaston koodi ei päädy bundleen. Tämä voi merkittävästi pienentää bundlen kokoa.
+Poikkeuksen muodostavat sovelluksen riippuvuudet, jota bundlataan esbuildin avulla. Tämä ratkaisee kaksi ongelmaa: monet npm-paketit ovat edelleen CommonJS-muodossa (jota selaimet eivät voi käyttää natiivisti), ja jotkut kirjastot koostuvat sadoista pienistä sisäisistä tiedostoista, jotka muuten aiheuttaisivat satoja erillisiä pyyntöjä. esbuild muuntaa ja yhdistelee ne, tallentaa tuloksen levylle välimuistiin, ja seuraavat käynnistykset ovat lähes välittömiä.
 
-Vastuunjako – esbuild nopeudesta, Rollup bundlen laadusta – on keskeinen osa Viten suunnittelua.
+**Tuotantotila** (<i>npm run build</i>) käyttää [Rollup](https://rollupjs.org/)ia bundlaukseen esbuildin hoitaessa edelleen muita tehtäviä kuten transpilointia (JSX, TypeScript) ja minifiointia. Rollup on suunniteltu alusta alkaen ES-moduuleille, ja sisältää useita optimointeja, jotka voivat merkittävästi pienentää bundlen kokoa.
 
-> Saatat miettiä, miksi Vite ei käytä esbuildia myös tuotantobundlaukseen, ottaen huomioon kuinka nopea se on. Syy on se, että esbuildsin bundlauksen tulos, vaikkakin oikea, tuottaa heikommin optimoituja tuloksia vaativissa tilanteissa: sillä on rajallinen tuki code splittingille, se ei tuota yhtä tasokasta chunkkioptimointia, ja sen plugin-ekosysteemi bundle-tason muunnoksia varten on vielä kypsymässä. Rollupin tulos on ennustettavampaa ja paremmin viritettyä todellisten sovellusten monimutkaisille riippuvuusgraafeille. Viten tekijät [ovat ilmoittaneet](https://vitejs.dev/guide/why.html#why-not-bundle-with-esbuild) aikovansa siirtyä esbuildiin tuotantobundlauksessa, kun sen ominaisuudet sulkevat tämän aukon.
+Vastuunjako, esbuild nopeudesta, Rollup bundlen laadusta, on keskeinen osa Viten suunnittelua.
+
+> Saatat miettiä, miksi Vite ei käytä esbuildia myös tuotantobundlaukseen, ottaen huomioon kuinka nopea se on. Syy on se, että esbuildin bundlauksen tulos, vaikkakin oikea, tuottaa heikommin optimoituja tuloksia haastavimmissa konfiguraatioissa. Rollupin tulos on ennustettavampaa ja paremmin viritettyä todellisten sovellusten monimutkaisille riippuvuusgraafeille. Viten tekijät [ovat ilmoittaneet](https://vitejs.dev/guide/why.html#why-not-bundle-with-esbuild) aikovansa siirtyä esbuildiin tuotantobundlauksessa, kun esbuild on kehittynyt riittävästi.
 
 ### esbuildiin tutustuminen
 
-Bundlauksen perusolemuksen ymmärtämiseksi on hyödyllistä työskennellä [esbuildsin](https://esbuild.github.io/) kanssa suoraan, ilman Viten lisäämää abstraktiokerrosta. Rakennetaan minimaalinen React-ympäristö tyhjästä.
+Jotta saamme paremman käsityksen bundlaamisesta ja siihen liittyvästä, rakennetaan minimaalinen React-ympäristö käyttäen [esbuildia](https://esbuild.github.io/).
+
 
 Luodaan ensin yksinkertainen React-sovellus seuraavalla hakemistorakenteella:
 
@@ -87,13 +91,13 @@ Luodaan ensin yksinkertainen React-sovellus seuraavalla hakemistorakenteella:
 └── package.json
 ```
 
-Asennetaan ensin React ja react-dom:
+Asennetaan ensin React ja <i>react-dom</i>:
 
 ```bash
 npm install react react-dom
 ```
 
-Asennetaan myös esbuild:
+Asennetaan myös <i>esbuild</i>:
 
 ```bash
 npm install --save-dev esbuild
@@ -111,7 +115,7 @@ Lisätään aluksi kaksi skriptiä <i>package.json</i>-tiedostoon:
 }
 ```
 
-Sovellusta varten tarvitsemme tiedoston <i>dist/index.html</i>, joka lataa JavaScript-bundlen:
+Sovellusta varten tarvitaan tiedoston <i>dist/index.html</i>, joka lataa JavaScript-bundlen:
 
 ```html
 <!DOCTYPE html>
@@ -127,7 +131,7 @@ Sovellusta varten tarvitsemme tiedoston <i>dist/index.html</i>, joka lataa JavaS
 </html>
 ```
 
-Sisääntulopiste <i>src/main.jsx</i> on tyypillinen:
+Sovelluksen "sisääntulopiste", eli <i>src/main.jsx</i> on vanha tuttu:
 
 ```jsx
 import React from 'react'
@@ -162,13 +166,13 @@ Nyt voimme bundlata sovelluksen:
 npm run build
 ```
 
-Tulostus on yksittäinen <i>dist/main.js</i>-tiedosto, joka sisältää sovelluskoodisi yhdessä React-kirjaston kanssa bundlattuna.
+Tulostus on yksittäinen <i>dist/main.js</i>-tiedosto, joka sisältää sovelluksen lähdekoodin yhdessä React-kirjaston kanssa bundlattuna.
 
-Voimme nyt ajaa bundlatun sovelluksen komennolla <i>npm run serve</i>. Tämä käyttää [serve](https://www.npmjs.com/package/serve)-pakettia käynnistääkseen paikallisen staattisten tiedostojen palvelimen <i>dist</i>-hakemistolle, jolloin sovellus on saatavilla osoitteessa <i>http://localhost:3000</i>:
+Voimme suorittaa bundlatun sovelluksen komennolla <i>npm run serve</i>. Komento käyttää [serve](https://www.npmjs.com/package/serve)-pakettia käynnistääkseen paikallisen staattisten tiedostojen palvelimen <i>dist</i>-hakemistolle, jolloin sovellus on saatavilla osoitteessa <i>http://localhost:3000</i>:
 
 ![](../../images/7/es1.png)
 
-esbuild tukee myös [minifiointia](https://en.wikipedia.org/wiki/Minification_(programming)) komentorivilippujen avulla. Minifiointi poistaa välilyönnit ja kommentit, lyhentää muuttujanimiä ja soveltaa muita kokooptimointeja. Bundle on huomattavan suuri, koska se sisältää koko React-kirjaston. Minifiointi pienentää sen kokoa merkittävästi.
+esbuild tukee myös [minifiointia](https://en.wikipedia.org/wiki/Minification_(programming)) komentoriviparametrien avulla. Minifiointi poistaa koodista välilyönnit ja kommentit, lyhentää muuttujanimiä ja soveltaa muita kokooptimointeja. Bundle on huomattavan suuri, koska se sisältää koko React-kirjaston. Minifiointi pienentää sen kokoa merkittävästi.
 
 Otetaan nyt käyttöön minifiointi:
 
@@ -181,13 +185,13 @@ Otetaan nyt käyttöön minifiointi:
 }
 ```
 
-Minifiointi pienentää bundlen koon noin 1,1 megatavusta noin 190 kilotavuun, mikä on merkittävä pienennys.
+Minifiointi pienentää bundlen koon noin 1,1 megatavusta noin 190 kilotavuun, pienennys on siis merkittävä!
 
-Minifioinnissa on kuitenkin haittapuoli: jos sovellus heittää ajonaikaisen virheen, selaimen kehittäjätyökalut osoittavat riville minifioidussa <i>main.js</i>-tiedostossa, jota on lähes mahdoton lukea:
+Minifioinnissa on kuitenkin haittapuoli. Jos sovellus aiheuttaa suoritusaikaisen virheen, selaimen kehittäjätyökalut viittaavat minifioituun koodiin, jota on lähes mahdoton lukea:
 
 ![](../../images/7/es2.png)
 
-Ratkaisu on [source map](https://developer.mozilla.org/en-US/docs/Glossary/Source_map): oheistiedosto (<i>dist/main.js.map</i>), joka tallentaa, miten jokainen minifioidun bundlen rivi vastaa alkuperäistä lähdekoodia. Kun se on käytössä, pinojäljitys osoittaa tarkkaan riviin <i>App.jsx</i>- tai <i>main.jsx</i>-tiedostossa minifioidun koodin lukukelvottoman seinän sijaan.
+Ratkaisu on [source map](https://developer.mozilla.org/en-US/docs/Glossary/Source_map) eli oheistiedosto (<i>dist/main.js.map</i>), joka tallentaa, miten jokainen minifioidun bundlen rivi vastaa alkuperäistä lähdekoodia. Kun se on käytössä, virheilmotus viittaa minifioidun koodin lukukelvottoman koodin sijaan bundlaamattomaan lähdekoodiin.
 
 Voimme ottaa source mapit käyttöön lisäämällä <i>--sourcemap</i>-lipun:
 
@@ -204,29 +208,31 @@ Nyt virhe on ymmärrettävä:
 
 ![](../../images/7/es3.png)
 
-Huomaa, että source mapit ovat korvaamattomia kehityksen ja debuggauksen aikana, mutta saatat haluta jättää ne pois julkisesta tuotantobuildista. Koska source map sisältää alkuperäisen lähdekoodisi, kuka tahansa, joka avaa selaimen kehittäjätyökalut, voi lukea minifioimattoman sovelluslogiikkasi. Jos tämä on huolenaihe, jätä yksinkertaisesti <i>--sourcemap</i>-lippu pois tuotantobuild-komennosta.
+Huomaa, että source mapit ovat todella hyödyllisiä kehityksen ja debuggauksen aikana, mutta ne kannattaa yleensä jättää pois julkisesta tuotantobuildista. Koska source map sisältää alkuperäisen lähdekoodin, kuka tahansa, joka avaa selaimen kehittäjätyökalut, voi lukea minifioimattoman koodin. Jos tästä on haittaa, tulee <i>--sourcemap</i>-valinta jättää pois tuotantobuild-komennosta.
 
 ### Transpilaus
 
-Bundlauksen ohella esbuild suorittaa toisen keskeisen tehtävän: <i>transpilauksen</i>. Transpilaus tarkoittaa lähdekoodin muuntamista yhdestä JavaScript-muodosta toiseen, tyypillisesti modernista tai laajennetusta syntaksista tavalliseksi JavaScriptiksi, jonka selaimet voivat suorittaa.
+Bundlauksen ohella esbuild suorittaa myös toisen keskeisen tehtävän: <i>transpilauksen</i>. Transpilaus tarkoittaa lähdekoodin muuntamista yhdestä JavaScript-muodosta toiseen, tyypillisesti modernista tai laajennetusta syntaksista tavalliseksi JavaScriptiksi, jonka selaimet voivat suorittaa.
 
-Selaimet ymmärtävät tavallista JavaScriptiä, mutta JSX ei ole kelvollista JavaScriptiä – yksikään selain ei voi jäsentää sitä suoraan. Kun kirjoitamme:
+Selaimet ymmärtävät tavallista JavaScriptiä, mutta JSX ei ole kelvollista JavaScriptiä, yksikään selain ei voi suorittaa sitä suoraan. Jos koodissa on esimerkiksi
 
 ```jsx
 const element = <App />
 ```
 
-se täytyy transpiloida sellaiseen muotoon, jonka selain voi suorittaa:
+tulee koodi transpiloida sellaiseen muotoon, jonka selain voi suorittaa:
 
 ```js
 const element = React.createElement(App, null)
 ```
 
-Tästä syystä transpilaus on pakollinen vaihe kaikissa React-projekteissa, ei valinnainen optimointi. esbuild suorittaa sen automaattisesti bundlauksen yhteydessä. <i>--jsx=automatic</i>-lipun ansiosta esbuild käsittelee JSX:n ilman ulkoisia työkaluja. Vanhassa Webpack-pohjaisessa työnkulussa piti asentaa ja konfiguroida [Babel](https://babeljs.io/) ja siihen liittyvät paketit JSX:n transpilointia varten. esbuildilla <i>.jsx</i>-päätteiset tiedostot transpiloidaan automaattisesti.
+Tästä syystä transpilaus on pakollinen vaihe kaikissa React-projekteissa, ei valinnainen optimointi. esbuild suorittaa sen automaattisesti bundlauksen yhteydessä. <i>--jsx=automatic</i>-valinnan ansiosta esbuild käsittelee JSX:n ilman ulkoisia työkaluja. Vanhassa Webpack-pohjaisessa työnkulussa piti asentaa ja konfiguroida [Babel](https://babeljs.io/) ja siihen liittyvät paketit JSX:n transpilointia varten. esbuildilla <i>.jsx</i>-päätteiset tiedostot transpiloidaan automaattisesti.
 
 ### Kehitysympäristö
 
-Tähän asti jokainen muutos on vaatinut komennon <i>npm run build</i> ajamisen ja selaimen manuaalisen päivityksen – hidas sykli, joka käy nopeasti tylsäksi. esbuildsin sisäänrakennettu [kehitysserveri](https://esbuild.github.io/api/#serve) ratkaisee tämän. Lisätään <i>dev</i>-skripti <i>package.json</i>-tiedostoon:
+Sovelluskehitys onnistuu jo, mutta development workflow on suorastaan hirveä. Muutosten jälkeen koodi on bundlattava komennolla <i>npm run build</i> ja selain uudelleenladattava jos haluamme testata koodia.
+
+esbuildin sisäänrakennettu [kehitysserveri](https://esbuild.github.io/api/#serve) ratkaisee ongelman. Lisätään <i>dev</i>-skripti <i>package.json</i>-tiedostoon:
 
 ```json
 {
@@ -238,19 +244,17 @@ Tähän asti jokainen muutos on vaatinut komennon <i>npm run build</i> ajamisen 
 }
 ```
 
-Komennon <i>npm run dev</i> ajaminen tekee kaksi asiaa yhtä aikaa. Ensiksi [--watch](https://esbuild.github.io/api/#watch) käskee esbuildsia tarkkailemaan kaikkia importattuja lähdekooditiedostoja muutosten varalta ja rakentamaan bundlen automaattisesti uudelleen aina kun jokin niistä tallennetaan. Toiseksi [--servedir](https://esbuild.github.io/api/#serve) käynnistää kevyen HTTP-palvelimen, joka tarjoaa <i>dist</i>-hakemiston sisällön – <i>index.html</i>:n ja juuri rakennetun <i>main.js</i>:n – osoitteessa <i>http://localhost:8000</i>.
+Komennon <i>npm run dev</i> suorittaminen tekee saa aikaan kaksi asiaa. Ensinnäkin [--watch](https://esbuild.github.io/api/#watch) käskee esbuildia tarkkailemaan kaikkia importattuja lähdekooditiedostoja muutosten varalta ja rakentamaan bundlen automaattisesti uudelleen aina kun jokin niistä tallennetaan. Toiseksi [--servedir](https://esbuild.github.io/api/#serve) käynnistää HTTP-palvelimen, joka tarjoaa <i>dist</i>-hakemiston sisällön, eli <i>index.html</i>:n ja juuri rakennetun <i>main.js</i>:n – osoitteessa <i>http://localhost:8000</i>.
 
-<i>--servedir</i>-lippu on se, joka saa molemmat osat toimimaan yhdessä: ilman sitä esbuild vain rakentaisi uudelleen watch-tilassa mutta ei tarjoilisi mitään. Sen kanssa palvelin toimittaa aina viimeisimmän bundlen, joten sinun tarvitsee vain päivittää selain tiedoston tallentamisen jälkeen.
+<i>--servedir</i>-valinta on se, joka saa molemmat osat toimimaan yhdessä: ilman sitä esbuild vain rakentaisi uuden bundlen uudelleen watch-tilassa. Sen kanssa palvelin tarjoaa aina viimeisimmän bundlen, joten sovelluskehittäjän tarvitsee vain päivittää selain tiedoston tallentamisen jälkeen.
 
-Huomaa, että toisin kuin Viten kehitysserveri, esbuild ei tue hot module replacementia. Lähdekoodin muutokset vaativat manuaalisen selaimen päivityksen tullakseen voimaan.
+Huomaa, että toisin kuin Viten kehitysserveri, esbuild ei tue hot module reloadia. Lähdekoodin muutokset vaativat manuaalisen selaimen päivityksen tullakseen voimaan.
 
-esbuildsin rajapinnan selkeys havainnollistaa, mitä bundleri perimmiltään tekee: se ottaa sisääntulopisteen, seuraa kaikki importit ja tuottaa optimoidun tulostuksen. Vite rakentuu tämän perustan päälle ja lisää kehittäjäkokemuksen kerroksen: kehitysserverin, hot module replacementin ja järkevät oletukset React-projekteille.
-
-Nyt kun meillä on selkeämpi käsitys siitä, mitä bundlaus ja transpilaus perimmiltään tarkoittavat, palataan Viten pariin ja katsotaan, miten sitä voidaan konfiguroida.
+Nyt  meillä on selkeämpi käsitys siitä, mitä bundlaus ja transpilaus perimmiltään tarkoittavat, palataan Viten pariin ja katsotaan vielä, muutamia tapoja sen konfigurointiin.
 
 ### Viten konfigurointi
 
-Suurimmassa osassa React-projekteja Vite toimii ilman minkäänlaista konfigurointia. Kun käyttäytymistä kuitenkin täytyy mukauttaa, muokataan <i>vite.config.js</i>-tiedostoa (tai <i>vite.config.ts</i>).
+Suurimmassa osassa React-projekteja Vite toimii ilman minkäänlaista konfigurointia. Kun käyttäytymistä kuitenkin täytyy mukauttaa, se tapahtuu muokkaamalla tiedostoa <i>vite.config.js</i>.
 
 Minimaalinen Vite-konfiguraatio React-projektille näyttää tältä:
 
@@ -263,7 +267,7 @@ export default defineConfig({
 })
 ```
 
-<i>@vitejs/plugin-react</i>-plugin mahdollistaa JSX-muunnoksen, fast refreshin (hot module replacement, joka säilyttää komponenttien tilan) ja muita React-kohtaisia ominaisuuksia.
+<i>@vitejs/plugin-react</i>-plugin  mahdollistaa JSX-syntaksin käsittelyn, nopean uudelleenlatauksen (hot module replacement, joka säilyttää komponenttien tilan päivitysten välillä) sekä muut React-kehitykseen tarvittavat ominaisuudet.
 
 #### Kehitysserverin konfigurointi
 
@@ -281,7 +285,7 @@ export default defineConfig({
 
 #### API-pyyntöjen proxytys
 
-Paikallisessa kehityksessä React-sovellus pyörii tyypillisesti yhdessä portissa (esim. 3000) ja backend toisessa (esim. 3001). Selaimen same-origin-käytäntö estäisi normaalisti pyyntöjen tekemisen niiden välillä. Viten proxy-asetus ratkaisee tämän ilman CORS-konfigurointia backendissä:
+Paikallisessa kehityksessä React-sovellus pyörii tyypillisesti yhdessä portissa (esim. 3000) ja backend toisessa (esim. 3001). Selaimen same-origin-policy estäisi normaalisti pyyntöjen tekemisen niiden välillä. Viten proxy-asetus ratkaisee tämän ilman CORS-konfigurointia backendissä:
 
 ```js
 export default defineConfig({
@@ -298,11 +302,11 @@ export default defineConfig({
 })
 ```
 
-Tällä konfiguraatiolla Viten kehitysserveri välittää automaattisesti kaikki React-sovelluksen tekemät pyynnöt osoitteeseen <i>/api/notes</i> osoitteeseen <i>http://localhost:3001/api/notes</i>. Frontend-koodin ei koskaan tarvitse sisällyttää <i>localhost:3001</i>-osoitetta URL-osoitteisiinsa kehityksen aikana.
+Tällä konfiguraatiolla Viten kehitysserveri välittää automaattisesti kaikki React-sovelluksen tekemät pyynnöt esim. osoitteeseen <i>/api/notes</i> osoitteeseen <i>http://localhost:3001/api/notes</i>. Frontend-koodin ei koskaan tarvitse sisällyttää <i>localhost:3001</i>-osoitetta URL-osoitteisiinsa kehityksen aikana.
 
 #### Ympäristömuuttujat
 
-Vitellä on sisäänrakennettu tuki ympäristömuuttujille <i>.env</i>-tiedostojen avulla. Tämä on moderni korvike vakioiden manuaaliselle injektoinnille bundleen.
+Vitellä on sisäänrakennettu tuki ympäristömuuttujille <i>.env</i>-tiedostojen avulla.
 
 Luodaan <i>.env</i>-tiedosto projektin juureen:
 
@@ -316,7 +320,7 @@ Ja <i>.env.production</i>-tiedosto tuotantoarvoille:
 VITE_BACKEND_URL=https://myapp.fly.dev/api/notes
 ```
 
-**Tärkeää:** kaikkien selaimelle näkyvien ympäristömuuttujien täytyy alkaa etuliitteellä <i>VITE_</i>. Muuttujat ilman tätä etuliitettä pysyvät vain palvelinpuolella, eikä niitä sisällytetä bundleen. Tämä on tietoinen turvallisuustoimenpide, joka estää salaisuuksien vahingollisen vuotamisen.
+Kaikkien selaimelle näkyvien ympäristömuuttujien täytyy alkaa etuliitteellä <i>VITE_</i>. Muuttujat ilman tätä etuliitettä pysyvät vain palvelinpuolella, eikä niitä sisällytetä bundleen. Tämä on tietoinen turvallisuustoimenpide, joka estää salaisuuksien vahingollisen vuotamisen.
 
 Muuttujaan pääsee käsiksi sovelluskoodissa <i>import.meta.env</i>:n kautta:
 
@@ -337,13 +341,11 @@ Vite valitsee automaattisesti oikean <i>.env</i>-tiedoston moden perusteella:
 - <i>npm run dev</i> käyttää tiedostoja <i>.env</i> ja <i>.env.development</i>
 - <i>npm run build</i> käyttää tiedostoja <i>.env</i> ja <i>.env.production</i>
 
-Lisää <i>.env.production</i> <i>.gitignore</i>-tiedostoon, jos se sisältää arkaluonteisia arvoja, ja käytä <i>.env.example</i>-tiedostoa dokumentoimaan, mitä muuttujia tarvitaan.
-
 #### Transpilaus
 
-Vite käsittelee koodin transpilauksen automaattisesti. Kehityksen aikana esbuild transpiloi TypeScript- ja JSX-koodisi tarpeen mukaan. Se on tarpeeksi nopea tekemään tämän tiedostokohtaisesti ilman havaittavaa viivettä. Tuotantobuildien aikana Rollup hoitaa bundlauksen esbuildsin hoitaessa transpilauksen.
+Vite hoitaa koodin transpilauksen automaattisesti. Kehityksen aikana esbuild transpiloi TypeScript- ja JSX-koodisi tarpeen mukaan. Se on tarpeeksi nopea tekemään tämän tiedostokohtaisesti ilman havaittavaa viivettä. Tuotantobuildien aikana Rollup hoitaa bundlauksen esbuildin hoitaessa transpilauksen.
 
-Viten oletustranspilointikohde on modernit selaimet, jotka tukevat natiiveja ES-moduuleita (Chrome 87+, Firefox 78+, Safari 14+, Edge 88+). Jos sinun täytyy tukea vanhempia selaimia, voit konfiguroida kohteen eksplisiittisesti ja lisätä <i>@vitejs/plugin-legacy</i>-pluginin:
+Viten oletustranspilointikohde on modernit selaimet, jotka tukevat natiiveja ES-moduuleita (Chrome 87+, Firefox 78+, Safari 14+, Edge 88+). Jos on tarvetta tukea vanhempia selaimia, on mahdollista konfiguroida kohde eksplisiittisesti ja lisätä <i>@vitejs/plugin-legacy</i>-pluginin:
 
 ```bash
 npm install --save-dev @vitejs/plugin-legacy
@@ -368,7 +370,7 @@ Legacy-plugin generoi automaattisesti erillisen bundlen vanhemmille selaimille B
 
 #### CSS
 
-Vite käsittelee CSS:n ilman minkäänlaista konfigurointia. Importtaa CSS-tiedosto JavaScriptistäsi:
+Vite käsittelee CSS:n ilman minkäänlaista konfigurointia, kun CSS-tiedosto importataan JavaScriptistä:
 
 ```js
 import './index.css'
@@ -376,35 +378,15 @@ import './index.css'
 
 Vite käsittelee sen ja sisällyttää sen buildiin. Tuotannossa CSS extraktoidaan erilliseen tiedostoon. Kehityksen aikana se injektoidaan <i>&lt;style&gt;</i>-tagien kautta hot reload -tuella.
 
-Vite tukee myös natiivisti [CSS Moduleita](https://github.com/css-modules/css-modules) scoped-tyyleille. Jokainen <i>.module.css</i>-päätteinen tiedosto käsitellään CSS Modulena:
-
-```js
-import styles from './App.module.css'
-
-const App = () => (
-  <div className={styles.container}>
-    hello vite
-  </div>
-)
-```
-
-CSS-esiprosessorit kuten [Sass](https://sass-lang.com/) voidaan lisätä yksinkertaisesti asentamalla esiprosessori – pluginia tai konfigurointia ei tarvita:
-
-```bash
-npm install --save-dev sass
-```
-
-Sen jälkeen <i>.scss</i>-tiedostot toimivat automaattisesti.
+Vite tukee myös natiivisti [CSS Moduleita](https://github.com/css-modules/css-modules) sekä CSS-esiprosesoreja kuten [Sass](https://sass-lang.com/).
 
 #### Minifiointi
 
-Komennon <i>npm run build</i> ajamisen yhteydessä Vite minifioi tulostuksen. Minifiointi poistaa välilyönnit ja kommentit, lyhentää muuttujanimiä ja soveltaa muita kokooptimointeja. Tuloksena on paljon pienempi tiedosto, joka latautuu nopeammin selaimessa.
+Komennon <i>npm run build</i> suorituksen yhteydessä Vite minifioi muodostettavan bundlen. Minifiointi poistaa välilyönnit ja kommentit, lyhentää muuttujanimiä ja soveltaa muita kokooptimointeja. Tuloksena on paljon pienempi tiedosto, joka latautuu nopeammin selaimessa.
 
-Vite käyttää esbuildsia JavaScript-minifiointiin ja sisäänrakennettua CSS-minifioijaa tyylitiedostoille.
+Vite käyttää esbuildia JavaScript-minifiointiin ja sisäänrakennettua CSS-minifioijaa tyylitiedostoille.
 
 #### Source mapit
-
-Source mapit mahdollistavat sen, että selaimen kehittäjätyökalut voivat yhdistää virheet ja breakpointit takaisin alkuperäiseen lähdekoodiin minifioidun bundlen sijaan. Ilman niitä pinojäljitys, joka osoittaa <i>main.js</i>:n riville 1, on lähes hyödytön debuggauksessa.
 
 Kehityksessä Vite generoi source mapit automaattisesti. Tuotantobuildeja varten ne voidaan ottaa käyttöön eksplisiittisesti:
 
@@ -416,8 +398,6 @@ export default defineConfig({
   },
 })
 ```
-
-Huomaa, että tuotannon source mapit pidentävät buildausaikaa ja paljastavat lähdekoodisi kaikille, jotka katsovat verkko-välilehteä. Monissa tapauksissa on parempi ladata source mapit virheenseurantapalveluun (kuten Sentryyn) ja pitää ne poissa julkiselta palvelimelta.
 
 #### Pluginit
 
@@ -434,9 +414,9 @@ Pluginit määritellään <i>plugins</i>-taulukossa <i>vite.config.js</i>-tiedos
 
 <i>Polyfill</i> on koodi, joka toteuttaa ominaisuuden selaimille, jotka eivät sitä natiivisti tue. Transpilaus yksin ei riitä ominaisuuksille, jotka ovat syntaktisesti kelvollisia mutta toteuttamattomia. Esimerkiksi selain saattaa jäsentää <i>Promise</i>n oikein mutta sillä ei ole toteutusta sille.
 
-Vitessä polyfillit hoitaa <i>@vitejs/plugin-legacy</i>-plugin, joka sisällyttää automaattisesti tarvittavat polyfillit selainkohteidesi perusteella. Jos tarvitset tietyn polyfillin ilman legacy-pluginia, voit asentaa sen suoraan ja importtaa sen sisääntulotiedostosi alussa.
+Vitessä polyfillit hoitaa <i>@vitejs/plugin-legacy</i>-plugin, joka sisällyttää automaattisesti tarvittavat polyfillit selainkohteidesi perusteella. 
 
-Voit tarkistaa selaintuen tietyille API:ille osoitteesta [https://caniuse.com](https://caniuse.com) tai [Mozillan MDN-dokumentaatiosta](https://developer.mozilla.org/).
+Selaintuen olemassaolo tietyille API:ille on mahdollista tarkastaa osoitteesta [https://caniuse.com](https://caniuse.com) tai [Mozillan MDN-dokumentaatiosta](https://developer.mozilla.org/).
 
 </div>
 

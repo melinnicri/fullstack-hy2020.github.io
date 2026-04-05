@@ -6,7 +6,7 @@ lang: fi
 
 <div class="intro">
 
-Kurssin seitsemäs osa käsittelee montaa teemaa. Ensin tutustutaan React routeriin, jonka avulla sovellus voidaan jakaa useiksi eri näkymiksi, joiden näkymistä hallitaan selaimen osoiterivillä olevalla URL:illa. Tämän jälkeen katsotaan vielä muutamaa tapaa miten CSS-tyylejä voi lisätä React-sovelluksille. Olemme koko kurssin käyttäneet Viteä sovellusten rungon luomiseen. Sovelluskehitykseen liittyvät työkalut on myös mahdollista konfiguroida itse, ja tässä osassa katsomme miten tämä onnistuu Webpack-nimisellä työkalulla. Käymme myös katsauksen siitä miten voimme määritellä itse hook-funktiota.
+Kurssin seitsemäs osa käsittelee montaa teemaa. Ensin tutustutaan siihen, miten omia hook-funktioita voidaan määritellä. Tämän jälkeen käydään läpi, miten React-sovellusten bundlaus toimii: tutustumme esbuildiin matalan tason bundlerina ja katsomme, miten Viteä voidaan konfiguroida eri tilanteisiin. Osan loppupuolella käydään lyhyesti läpi luokkakomponentit sekä muita React-sovelluskehitykseen liittyviä aiheita kuten koodin organisointia ja tilanhallintaa.
 
 Kurssin seitsemännen osan teemoihin liittyvät myös useat yhteistyökumppaniemme asiantuntijoiden vierailuluennoista, jotka löydät <a href='https://www.youtube.com/playlist?list=PLumQiZ25uijis31zaRL7rhzLalSwLqUtm'><span style='text-decoration: underline;'>täältä</span></span></a>.
   
