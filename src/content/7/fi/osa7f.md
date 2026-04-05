@@ -19,9 +19,9 @@ Hyvä neuvo niin refaktorointiin kuin uudenkin koodin kirjoittamiseen on <i>pien
 
 <div class="tasks">
 
-### Tehtävät 7.9.-7.21.
+### Tehtävät 7.6.-7.18.
 
-#### 7.9: koodin automaattinen muotoilu
+#### 7.6: koodin automaattinen muotoilu
 
 Käytimme edellisissä osissa ESLintiä valvomaan koodin tyyliä. Hieman toisenlaisen näkökulman koodin tyylin kontrollointiin tarjoaa [Prettier](https://prettier.io/), joka on dokumentaationsa mukaan <i>an opinionated code formatter</i>. Prettier ei ESLintin tavoin ainoastaan valvo koodin laatua, vaan myös haluttaessa <i>muotoilee</i> koodin automaattisesti sääntöjen mukaiseksi.
 
@@ -31,17 +31,17 @@ Ota sovellukseesi käyttöön Prettier, tee sille sopiva konfiguraatio sekä edi
 
 ### Tilan hallinta: Zustand
 
-<i>Tehtävistä 7.10-7.13 on valittavissa kaksi vaihtoehtoista versiota: voit tehdä sovelluksen tilanhallinnan joko käyttäen Zustandia tai React Queryä ja Context APIa</i>. Jos haluat maksimoida oppimisen, voit tehdä molemmat versiot!
+<i>Tehtävistä 7.7-7.10 on valittavissa kaksi vaihtoehtoista versiota: voit tehdä sovelluksen tilanhallinnan joko käyttäen Zustandia tai React Queryä ja Context APIa</i>. Jos haluat maksimoida oppimisen, voit tehdä molemmat versiot!
 
 Huom: jos teit osan 6 käyttäenn Reduxia, voit toki käyttää tässä tehtäväsarjassa Zustandin sijaan myös Reduxia!
 
-#### 7.10: Zustand, step1
+#### 7.7: Zustand, step1
 
 Siirry käyttämään React-komponenttien tilan sijaan Zustandia sovelluksen tilan hallintaan.
 
 Muuta tässä tehtävässä notifikaatio käyttämään Zustandia.
 
-#### 7.11: Zustand, step2
+#### 7.8: Zustand, step2
 
 <i>Tämä ja seuraava kaksi osaa ovat kohtuullisen työläitä, mutta erittäin opettavaisia.</i>
 
@@ -49,33 +49,33 @@ Siirrä blogien tietojen talletus Zustandiin. Tässä tehtävässä riittää, e
 
 Kirjautumisen ja uuden blogin luomisen lomakkeiden tilaa kannattaa hallita edelleen Reactin tilan avulla.
 
-#### 7.12: Zustand, step3
+#### 7.9: Zustand, step3
 
 Laajenna ratkaisua siten, että blogien "liketys" ja poisto toimivat.
 
-#### 7.13: Zustand, step4
+#### 7.10: Zustand, step4
 
 Siirrä myös kirjautuneen käyttäjän tietojen talletus Zustandiin.
 
 ### Tilan hallinta: React Query ja context
 
-<i>Tehtävistä 7.10-7.13 on valittavissa kaksi vaihtoehtoista versiota: voit tehdä sovelluksen tilanhallinnan joko käyttäen Zustandia tai React Queryä ja Contextia</i>.
+<i>Tehtävistä 7.7-7.10 on valittavissa kaksi vaihtoehtoista versiota: voit tehdä sovelluksen tilanhallinnan joko käyttäen Zustandia tai React Queryä ja Contextia</i>.
 
-#### 7.10: React Query ja context step1
+#### 7.7: React Query ja context step1
 
 Muuta tässä tehtävässä notifikaation tilanhallinta tapahtumaan käyttäen useReducer-hookia ja contextia.
 
-#### 7.11: React Query ja context step2
+#### 7.8: React Query ja context step2
 
 Siirrä blogien tietojen hallinnointi tapahtumaan React Query ‑kirjastoa hyväksikäyttäen. Tässä tehtävässä riittää, että sovellus näyttää olemassa olevat blogit ja, että uuden blogin luominen onnistuu.
 
 Kirjautumisen ja uuden blogin luomisen lomakkeiden tilaa kannattaa hallita edelleen Reactin tilan avulla.
 
-#### 7.12: React Query ja context step3
+#### 7.9: React Query ja context step3
 
 Laajenna ratkaisua siten, että blogien "liketys" ja poisto toimivat.
 
-#### 7.13: React Query ja context step4
+#### 7.10: React Query ja context step4
 
 Siirrä myös kirjautuneen käyttäjän tietojen hallinnointi tapahtumaan useReducer-hookin ja contextin avulla.
 
@@ -83,13 +83,13 @@ Siirrä myös kirjautuneen käyttäjän tietojen hallinnointi tapahtumaan useRed
 
 Loput tehtävät ovat yhteisiä sekä Zustand- että React Query ‑versiota tekeville.
 
-#### 7.14: käyttäjien näkymä
+#### 7.11: käyttäjien näkymä
 
 Tee sovellukseen näkymä, joka näyttää kaikkiin käyttäjiin liittyvät perustiedot:
 
 ![](../../images/7/41.png)
 
-#### 7.15: yksittäisen käyttäjän näkymä
+#### 7.12: yksittäisen käyttäjän näkymä
 
 Tee sovellukseen yksittäisen käyttäjän näkymä, jolta selviää mm. käyttäjän lisäämät blogit
 
@@ -124,7 +124,7 @@ const User = () => {
 }
 ```
 
-#### 7.16: blogin näkymä
+#### 7.13: blogin näkymä
 
 Toteuta sovellukseen oma näkymä yksittäisille blogeille. Näkymä voi näyttää seuraavalta
 
@@ -136,13 +136,13 @@ Näkymään päästään klikkaamalla blogin nimeä kaikkien blogien näkymäst�
 
 Tämän tehtävän jälkeen tehtävässä 5.6 toteutettua toiminnallisuutta ei enää tarvita, eli kaikkien blogien näkymässä yksittäisten blogien detaljien ei enää tarvitse avautua klikattaessa.
 
-#### 7.17: navigointi
+#### 7.14: navigointi
 
 Tee sovellukseen navigaatiomenu
 
 ![](../../images/7/47.png)
 
-#### 7.18: kommentit, step1
+#### 7.15: kommentit, step1
 
 Tee sovellukseen mahdollisuus blogien kommentointiin:
 
@@ -154,17 +154,17 @@ Tässä tehtävässä riittää, että frontend osaa näyttää blogilla olevat 
 
 Sopiva rajapinta kommentin luomiseen on osoitteeseen <i>api/blogs/:id/comments</i> tapahtuva HTTP POST ‑pyyntö.
 
-#### 7.19: kommentit, step2
+#### 7.16: kommentit, step2
 
 Laajenna sovellusta siten, että kommentointi onnistuu frontendista käsin:
 
 ![](../../images/7/49.png)
 
-#### 7.20: tyylit, step1
+#### 7.17: tyylit, step1
 
 Tee sovelluksesi ulkoasusta tyylikkäämpi jotain kurssilla esiteltyä tapaa käyttäen
 
-#### 7.21: tyylit, step2
+#### 7.18: tyylit, step2
 
 Jos käytät tyylien lisäämiseen noin tunnin aikaa, merkkaa myös tämä tehtävä tehdyksi.
 

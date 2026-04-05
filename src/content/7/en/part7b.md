@@ -290,11 +290,11 @@ The internet is starting to fill up with more and more helpful material related 
 
 <div class="tasks">
 
-### Exercises 7.4.-7.8.
+### Exercises 7.1.-7.5.
 
 We'll continue with the app from the [exercises](/en/part7/react_router#exercises-7-1-7-3) of the [react router](/en/part7/react_router) chapter.
 
-#### 7.4: Anecdotes and Hooks step 1
+#### 7.1: Anecdotes and Hooks step 1
 
 Simplify the anecdote creation form of your application with the _useField_ custom hook we defined earlier.
 
@@ -337,7 +337,7 @@ const App = () => {
 }
 ```
 
-#### 7.5: Anecdotes and Hooks step 2
+#### 7.2: Anecdotes and Hooks step 2
 
 Add a button to the form that you can use to clear all the input fields:
 
@@ -351,7 +351,7 @@ Depending on your solution, you may see the following warning in your console:
 
 We will return to this warning in the next exercise.
 
-#### 7.6: Anecdotes and Hooks step 3
+#### 7.3: Anecdotes and Hooks step 3
 
 If your solution did not cause a warning to appear in the console, you have already finished this exercise.
 
@@ -388,7 +388,7 @@ One simple fix would be to not use the spread syntax and write all of the forms 
 
 If we were to do this, we would lose much of the benefit provided by the <i>useField</i> hook. Instead, come up with a solution that fixes the issue, but is still easy to use with the spread syntax.
 
-#### 7.7: Country hook
+#### 7.4: Country hook
 
 Let's return to exercises [2.18-2.20](/en/part2/adding_styles_to_react_app#exercises-2-18-2-20).
 
@@ -408,7 +408,7 @@ Use the API endpoint [name](https://studies.cs.helsinki.fi/restcountries/) to fe
 
 Note that in this exercise it is essential to use useEffect's [second parameter](https://react.dev/reference/react/useEffect#parameters) array to control when the effect function is executed. See the course [part 2](/en/part2/adding_styles_to_react_app#couple-of-important-remarks) for more info how the second parameter could be used.
 
-#### 7.8: Ultimate Hooks
+#### 7.5: Ultimate Hooks
 
 The code of the application responsible for communicating with the backend of the note application of the previous parts looks like this:
 
