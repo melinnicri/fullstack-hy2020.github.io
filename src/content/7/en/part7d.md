@@ -4,28 +4,35 @@ part: 7
 letter: d
 lang: en
 ---
+
 <div class="content">
 
-In the early days, React was somewhat famous for being very difficult to configure the tools required for application development. To make the situation easier, [Create React App](https://github.com/facebookincubator/create-react-app) was developed, which eliminated configuration-related problems. [Vite](https://vitejs.dev/), which is also used in the course, has recently replaced Create React App in new applications.
+In the early days, React was somewhat famous for being very difficult to configure the tools required for application development. To make the situation easier, [Create React App](https://github.com/facebookincubator/create-react-app) was developed, which eliminated configuration-related problems. [Vite](https://vitejs.dev/), that is used throughout this course, has since replaced Create React App as the standard for new React applications.
 
-Both Vite and Create React App use <i>bundlers</i> to do the actual work. We will now familiarize ourselves with the bundler called [Webpack](https://webpack.js.org/) used by Create React App. Webpack was by far the most popular bundler for years. Recently, however, there have been several new generation bundlers such as [esbuild](https://esbuild.github.io/) used by Vite, which are significantly faster and easier to use than Webpack. However, e.g. esbuild still lacks some useful features (such as hot reload of the code in the browser), so next we will get to know the old ruler of bundlers, Webpack.
+Both Vite and Create React App use <i>bundlers</i> to do the actual work. In this section we will take a closer look at what bundlers actually do, how Vite works under the hood, and how to configure it for different scenarios. We will also briefly examine [esbuild](https://esbuild.github.io/), a low-level bundler that Vite itself uses internally, understanding esbuild helps clarify what bundling fundamentally means.
+
+> #### What about Webpack?
+>
+>Webpack was the dominant bundler for most of the 2010s and is still encountered in older and enterprise codebases. This course also covered Webpack until spring 2026.
+>
+> If you work on a legacy project, knowing that Webpack exists and uses the same core concepts (entry points, loaders/plugins, output) is useful. However, setting up a new project with Webpack in 2026 is not recommended. Its configuration is complex, and modern tools like Vite provide a dramatically better developer experience. We will not cover Webpack configuration in this course.
 
 ### Bundling
 
-We have implemented our applications by dividing our code into separate modules that have been <i>imported</i> to places that require them. Even though ES6 modules are defined in the ECMAScript standard, the older browsers do not know how to handle code that is divided into modules.
+We have implemented our applications by dividing our code into separate modules that have been <i>imported</i> to places that require them. Even though ES6 modules are defined in the ECMAScript standard, not all execution environments handle module-based code automatically. Even modern browsers benefit from having dependencies pre-processed and optimized before delivery.
 
-For this reason, code that is divided into modules must be <i>bundled</i> for browsers, meaning that all of the source code files are transformed into a single file that contains all of the application code. When we deployed our React frontend to production in [part 3](/en/part3/deploying_app_to_internet), we performed the bundling of our application with the _npm run build_ command. Under the hood, the npm script bundles the source, and this produces the following collection of files in the <i>dist</i> directory:
+For this reason, code that is divided into modules is <i>bundled</i> for production, meaning that the source code files are transformed and combined into an optimized set of files that the browser can efficiently load. When we ran <i>npm run build</i> in earlier parts of this course, Vite performed this bundling. The output appears in the <i>dist</i> directory:
 
 ```
 ├── assets
-│   ├── index-d526a0c5.css
-│   ├── index-e92ae01e.js
-│   └── react-35ef61ed.svg
+│   ├── index-d526a0c5.css
+│   ├── index-e92ae01e.js
+│   └── react-35ef61ed.svg
 ├── index.html
 └── vite.svg
 ```
 
-The <i>index.html</i> file located at the root of the <i>dist</i> directory is the "main file" of the application which loads the bundled JavaScript file with a <i>script</i> tag:
+The <i>index.html</i> at the root loads the bundled JavaScript with a <i>script</i> tag:
 
 ```html
 <!doctype html>
@@ -35,185 +42,94 @@ The <i>index.html</i> file located at the root of the <i>dist</i> directory is t
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React</title>
-    <script type="module" crossorigin src="/assets/index-e92ae01e.js"></script>
-    <link rel="stylesheet" href="/assets/index-d526a0c5.css">
+    <script type="module" crossorigin src="/assets/index-e92ae01e.js"></script> // highlight-line
+    <link rel="stylesheet" href="/assets/index-d526a0c5.css">  // highlight-line
   </head>
   <body>
     <div id="root"></div>
-    
   </body>
 </html>
 ```
 
-As we can see from the example application that was created with Vite, the build script also bundles the application's CSS files into a single <i>/assets/index-d526a0c5.css</i> file.
+The CSS is also bundled into a single file.
 
-In practice, bundling is done so that we define an entry point for the application, which typically is the <i>index.js</i> file. When webpack bundles the code, it includes not only the code from the entry point but also the code that is imported by the entry point, as well as the code imported by its import statements, and so on.
+In practice, bundling starts from an entry point, that is typically <i>main.jsx</i>. Vite includes not only the code from the entry point but also everything it imports, recursively, until the full dependency graph has been resolved.
 
 Since part of the imported files are packages like React, Redux, and Axios, the bundled JavaScript file will also contain the contents of each of these libraries.
 
-> The old way of dividing the application's code into multiple files was based on the fact that the <i>index.html</i> file loaded all of the separate JavaScript files of the application with the help of script tags. This resulted in  decreased performance, since the loading of each separate file results in some overhead. For this reason, these days the preferred method is to bundle the code into a single file.
+> Before bundlers were available, the old approach was based on the fact that the index.html file loaded all of the separate JavaScript files of the application with the help of script tags. This resulted in decreased performance, since the loading of each separate file results in some overhead. For this reason, these days the preferred method is to bundle the code into a single file. Bundling also  enables optimizations like minification and tree-shaking (removing unused code).
 
-Next, we will create a webpack configuration by hand, suitable for a new React application.
+### How Vite works
 
-Let's create a new directory for the project with the following subdirectories (<i>build</i> and <i>src</i>) and files:
+Vite has two distinct operating modes that work quite differently.
+
+**Development mode** (<i>npm run dev</i>) doesn't bundle your code at all. Instead, Vite starts a dev server that serves your source files as native ES modules, letting the browser resolve imports directly. This is why startup is nearly instant regardless of project size.
+One exception: third-party dependencies from node_modules are pre-bundled by esbuild before the server starts. This handles two problems: many npm packages are still in CommonJS format (which browsers can't consume natively), and some libraries consist of hundreds of tiny internal files that would otherwise trigger hundreds of separate requests. esbuild converts and consolidates them, caches the result on disk, and subsequent starts are near-instant.
+
+**Production mode** (<i>npm run build</i>) uses [Rollup](https://rollupjs.org/) for bundling with esbuild still handling other tasks such as transpilation (JSX, TypeScript) and minification. Rollup was designed from the ground up for ES modules, which makes it exceptionally good at <i>tree-shaking</i> that is a technique that statically analyzes which exports from each module are actually used and removes the rest from the final bundle. For example, if you import only one utility function from a large library, tree-shaking ensures that the rest of that library's code is not included in the bundle. This can significantly reduce bundle size.
+
+The division of labor, esbuild for speed, Rollup for bundle quality, is central to Vite's design.
+
+> You might wonder why Vite doesn't just use esbuild for production bundling too, given how fast it is. The reason is that esbuild's bundling output, while correct, produces less optimized results for advanced scenarios: it has limited support for code splitting, does not produce the same level of chunk optimization, and its plugin ecosystem for bundle-level transformations is still maturing. Rollup's output is more predictable and better tuned for the complex dependency graphs that real applications produce. Vite's authors [have stated](https://vitejs.dev/guide/why.html#why-not-bundle-with-esbuild) that they intend to switch to esbuild for production bundling once its capabilities close this gap.
+
+### Understanding esbuild
+
+To understand what bundling fundamentally involves, it is useful to work with [esbuild](https://esbuild.github.io/) directly, without the abstraction layer that Vite adds on top. Let us build a minimal React environment from scratch.
+
+Let us now create a simple React app with the following directory structure:
 
 ```
-├── build
-├── package.json
+├── dist
+│   └── index.html
 ├── src
-│   └── index.js
-└── webpack.config.js
+│   ├── index.jsx
+│   └── App.jsx
+└── package.json
 ```
 
-The contents of the <i>package.json</i> file can e.g. be the following:
-
-```json
-{
-  "name": "webpack-part7",
-  "version": "0.0.1",
-  "description": "practicing webpack",
-  "scripts": {},
-  "license": "MIT"
-}
-```
-
-Let's install webpack with the command:
-
-```bash
-npm install --save-dev webpack webpack-cli
-```
-
-We define the functionality of webpack in the <i>webpack.config.js</i> file, which we initialize with the following content:
-
-```js
-const path = require('path')
-
-const config = () => {
-  return {
-    entry: './src/index.js',
-    output: {
-      path: path.resolve(__dirname, 'build'),
-      filename: 'main.js'
-    }
-  }
-}
-
-module.exports = config
-```
-
-**Note:** it would be possible to make the definition directly as an object instead of a function:
-
-```js
-const path = require('path')
-
-const config = {
-  entry: './src/index.js',
-  output: {
-    path: path.resolve(__dirname, 'build'),
-    filename: 'main.js'
-  }
-}
-
-module.exports = config
-```
-
-An object will suffice in many situations, but we will later need certain features that require the definition to be done as a function.
-
-We will then define a new npm script called <i>build</i> that will execute the bundling with webpack:
-
-```js
-// ...
-"scripts": {
-  "build": "webpack --mode=development"
-},
-// ...
-```
-
-Let's add some more code to the <i>src/index.js</i> file:
-
-```js
-const hello = name => {
-  console.log(`hello ${name}`)
-}
-```
-
-When we execute the _npm run build_ command, our application code will be bundled by webpack. The operation will produce a new <i>main.js</i> file that is added under the <i>build</i> directory:
-
-![terminal output webpack npm run build](../../images/7/19x.png)
-
-The file contains a lot of stuff that looks quite interesting. We can also see the code we wrote earlier at the end of the file:
-
-```js
-eval("const hello = name => {\n  console.log(`hello ${name}`)\n}\n\n//# sourceURL=webpack://webpack-osa7/./src/index.js?");
-```
-
-Let's add an <i>App.js</i> file under the <i>src</i> directory with the following content:
-
-```js
-const App = () => {
-  return null
-}
-
-export default App
-```
-
-Let's import and use the <i>App</i> module in the <i>index.js</i> file:
-
-```js
-import App from './App';
-
-const hello = name => {
-  console.log(`hello ${name}`)
-}
-
-App()
-```
-
-When we bundle the application again with the _npm run build_ command, we notice that webpack has acknowledged both files:
-
-![terminal output showing webpack generated two files](../../images/7/20x.png)
-
-Our application code can be found at the end of the bundle file in a rather obscure format:
-
-![terminal output showing our minified code](../../images/7/20z.png)
-
-### Configuration file
-
-Let's take a closer look at the contents of our current <i>webpack.config.js</i> file:
-
-```js
-const path = require('path')
-
-const config = () => {
-  return {
-    entry: './src/index.js',
-    output: {
-      path: path.resolve(__dirname, 'build'),
-      filename: 'main.js'
-    }
-  }
-}
-
-module.exports = config
-```
-
-The configuration file has been written in JavaScript and the function returning the configuration object is exported using Node's module syntax.
-
-Our minimal configuration definition almost explains itself. The [entry](https://webpack.js.org/concepts/#entry) property of the configuration object specifies the file that will serve as the entry point for bundling the application.
-
-The [output](https://webpack.js.org/concepts/#output) property defines the location where the bundled code will be stored. The target directory must be defined as an <i>absolute path</i>, which is easy to create with the [path.resolve](https://nodejs.org/docs/latest-v8.x/api/path.html#path_path_resolve_paths) method. We also use [\_\_dirname](https://nodejs.org/docs/latest/api/modules.html#__dirname) which is a variable in Node that stores the path to the current directory.
-
-### Bundling React
-
-Next, let's transform our application into a minimal React application. Let's install the required libraries:
+We start by installing React and react-dom:
 
 ```bash
 npm install react react-dom
 ```
 
-And let's turn our application into a React application by adding the familiar definitions in the <i>index.js</i> file:
+We also need to install esbuild:
 
-```js
+```bash
+npm install --save-dev esbuild
+```
+
+At the start we add two scripts to the <i>package.json</i>:
+
+```json
+{
+  "scripts": {
+    "build": "esbuild src/main.jsx --bundle --outfile=dist/main.js --jsx=automatic",
+    "serve": "npx serve dist"
+  },
+  // ...
+}
+```
+
+For the app we need the file <i>dist/index.html</i> that loads the JavaScript bundle:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>esbuild app</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="./main.js"></script>
+  </body>
+</html>
+```
+
+The entry point <i>src/main.jsx</i> is the typical one:
+
+```jsx
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
@@ -221,15 +137,18 @@ import App from './App'
 ReactDOM.createRoot(document.getElementById('root')).render(<App />)
 ```
 
-We will also make the following changes to the <i>App.js</i> file:
+The simple application component <i>src/App.jsx</i> is as follows:
 
-```js
-import React from 'react' // we need this now also in component files
+```jsx
+import React, { useState } from 'react'
 
 const App = () => {
+  const [counter, setCounter] = useState(0)
+
   return (
     <div>
-      hello webpack
+      <p>count: {counter}</p>
+      <button onClick={() => setCounter(counter + 1)}>increment</ button>
     </div>
   )
 }
@@ -237,642 +156,287 @@ const App = () => {
 export default App
 ```
 
-We still need the <i>build/index.html</i> file  that will serve as the "main page" of our application, which will load our bundled JavaScript code with a <i>script</i> tag:
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>React App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="text/javascript" src="./main.js"></script>
-  </body>
-</html>
-```
-
-When we bundle our application, we run into the following problem:
-
-![webpack terminal failed loader needed](../../images/7/21x.png)
-
-### Loaders
-
-The error message from webpack states that we may need an appropriate <i>loader</i> to bundle the <i>App.js</i> file correctly. By default, webpack only knows how to deal with plain JavaScript. Although we may have become unaware of it, we are using [JSX](https://facebook.github.io/jsx/) for rendering our views in React. To illustrate this, the following code is not regular JavaScript:
-
-```js
-const App = () => {
-  return (
-    <div>
-      hello webpack
-    </div>
-  )
-}
-```
-
-The syntax used above comes from JSX and it provides us with an alternative way of defining a React element for an HTML <i>div</i> tag.
-
-We can use [loaders](https://webpack.js.org/concepts/loaders/) to inform webpack of the files that need to be processed before they are bundled.
-
-Let's configure a loader to our application that transforms the JSX code into regular JavaScript:
-
-```js
-const path = require('path')
-
-const config = () => {
-  return {
-    entry: './src/index.js',
-    output: {
-      path: path.resolve(__dirname, 'build'),
-      filename: 'main.js'
-    },
-      // highlight-start
-    module: {
-      rules: [
-        {
-          test: /\.js$/,
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-react'],
-          },
-        },
-      ],
-    },
-      // highlight-end
-  }
-}
-
-module.exports = config
-```
-
-Loaders are defined under the <i>module</i> property in the <i>rules</i> array.
-
-The definition of a single loader consists of three parts:
-
-```js
-{
-  test: /\.js$/,
-  loader: 'babel-loader',
-  options: {
-    presets: ['@babel/preset-react']
-  }
-}
-```
-
-The <i>test</i> property specifies that the loader is for files that have names ending with <i>.js</i>. The <i>loader</i> property specifies that the processing for those files will be done with [babel-loader](https://github.com/babel/babel-loader). The <i>options</i> property is used for specifying parameters for the loader, which configure its functionality.
-
-Let's install the loader and its required packages as a <i>development dependency</i>:
+Now we can bundle the app:
 
 ```bash
-npm install @babel/core babel-loader @babel/preset-react --save-dev
+npm run build
 ```
 
-Bundling the application will now succeed.
+The output is a single <i>dist/main.js</i> that contains your application code along with the React library bundled together.
 
-If we make some changes to the <i>App</i> component and take a look at the bundled code, we notice that the bundled version of the component looks like this:
+We can now run the bundled app with <i>npm run serve</i>. This uses the [serve](https://www.npmjs.com/package/serve) package to start a local static file server for the <i>dist</i> directory, making the application available at <i>http://localhost:3000</i>:
 
-```js
-const App = () =>
-  react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(
-    'div',
-    null,
-    'hello webpack'
-  )
-```
+![](../../images/7/es1.png)
 
-As we can see from the example above, the React elements that were written in JSX are now created with regular JavaScript by using React's [createElement](https://react.dev/reference/react/createElement) function.
+esbuild also supports [minification](https://en.wikipedia.org/wiki/Minification_(programming)) through command-line flags. Minification removes whitespace and comments, shortens variable names, and applies other size optimizations. The bundle will be notably large because it includes the full React library. Minification reduces its size significantly.
 
-You can test the bundled application by opening the <i>build/index.html</i> file with the <i>open file</i> functionality of your browser:
+Let us now enable minification:
 
-![browser hello webpack](../../images/7/22.png)
-
-It's worth noting that if the bundled application's source code uses <i>async/await</i>, the browser will not render anything on some browsers. [Googling the error message in the console](https://stackoverflow.com/questions/33527653/babel-6-regeneratorruntime-is-not-defined) will shed some light on the issue. With the [previous solution](https://babeljs.io/docs/en/babel-polyfill/) being deprecated we now have to install two more missing dependencies, that is [core-js](https://www.npmjs.com/package/core-js) and [regenerator-runtime](https://www.npmjs.com/package/regenerator-runtime):
-
-```bash
-npm install core-js regenerator-runtime
-```
-
-You need to import these dependencies at the top of the <i>index.js</i> file:
-
-```js
-import 'core-js/stable/index.js'
-import 'regenerator-runtime/runtime.js'
-```
-
-Our configuration contains nearly everything that we need for React development.
-
-### Transpilers
-
-The process of transforming code from one form of JavaScript to another is called [transpiling](https://en.wiktionary.org/wiki/transpile). The general definition of the term is to compile source code by transforming it from one language to another.
-
-By using the configuration from the previous section, we are <i>transpiling</i> the code containing JSX into regular JavaScript with the help of [babel](https://babeljs.io/), which is currently the most popular tool for the job.
-
-As mentioned in part 1, most browsers do not support the latest features that were introduced in ES6 and ES7, and for this reason, the code is usually transpiled to a version of JavaScript that implements the ES5 standard.
-
-The transpilation process that is executed by Babel is defined with [plugins](https://babeljs.io/docs/plugins/). In practice, most developers use ready-made [presets](https://babeljs.io/docs/plugins/) that are groups of pre-configured plugins.
-
-Currently, we are using the [@babel/preset-react](https://babeljs.io/docs/babel-preset-react/) preset for transpiling the source code of our application:
-
-```js
+```json
 {
-  test: /\.js$/,
-  loader: 'babel-loader',
-  options: {
-    presets: ['@babel/preset-react'] // highlight-line
+  "scripts": {
+    "build": "esbuild src/main.jsx --bundle --minify --outfile=dist/main.js --jsx=automatic",  // highlight-line
+    "serve": "npx serve dist"
   }
 }
 ```
 
-Let's add the [@babel/preset-env](https://babeljs.io/docs/babel-preset-env/) plugin that contains everything needed to take code using all of the latest features and to transpile it to code that is compatible with the ES5 standard:
+Minification brings the bundle size down from around 1.1 MB to around 190 KB, a substantial reduction.
 
-```js
+Minification has a catch: if the application throws a runtime error, the browser's developer tools will point to a line in the minified <i>main.js</i>, which is all but impossible to read:
+
+![](../../images/7/es2.png)
+
+The solution is a [source map](https://developer.mozilla.org/en-US/docs/Glossary/Source_map): a companion file (<i>dist/main.js.map</i>) that records how every line of the minified bundle corresponds to the original source. With it enabled, a stack trace points to the exact line in <i>App.jsx</i> or <i>main.jsx</i> instead of somewhere inside an unreadable wall of minified code.
+
+We can enable source maps by adding the <i>--sourcemap</i> flag:
+
+```json
 {
-  test: /\.js$/,
-  loader: 'babel-loader',
-  options: {
-    presets: ['@babel/preset-env', '@babel/preset-react'] // highlight-line
+  "scripts": {
+    "build": "esbuild src/main.jsx --bundle --minify --sourcemap --outfile=dist/main.js --jsx=automatic",  // highlight-line
+    "serve": "npx serve dist"
   }
 }
 ```
 
-Let's install the preset with the command:
+Now the error makes sense:
 
-```bash
-npm install @babel/preset-env --save-dev
+![](../../images/7/es3.png)
+
+Note that source maps are invaluable during development and debugging, but you may want to leave them out of a public production build. Because a source map contains your original source code, anyone who opens the browser's developer tools can read your unminified application logic. If that is a concern, simply omit the <i>--sourcemap</i> flag from the production build command.
+
+### Transpilation
+
+Alongside bundling, esbuild performs another essential task: <i>transpilation</i>. Transpilation means converting source code written in one form of JavaScript into another form, typically from modern or extended syntax into plain JavaScript that browsers can execute.
+
+Browsers understand standard JavaScript, but JSX is not valid JavaScript, no browser can parse it directly. When we write:
+
+```jsx
+const element = <App />
 ```
 
-When we transpile the code, it gets transformed into old-school JavaScript. The definition of the transformed <i>App</i> component looks like this:
+it must be transpiled it into something the browser can run:
 
 ```js
-var App = function App() {
-  return _react2.default.createElement('div', null, 'hello webpack')
-};
+const element = React.createElement(App, null)
 ```
 
-As we can see, variables are declared with the _var_ keyword, as ES5 JavaScript does not understand the _const_ keyword. Arrow functions are also not used, which is why the function definition used the _function_ keyword.
+This is why transpilation is a required step for any React project, not an optional optimization. esbuild performs it automatically during bundling. With the <i>--jsx=automatic</i> flag, esbuild handles JSX without any external tool. In the old Webpack-based workflow you had to install and configure [Babel](https://babeljs.io/) and related packages to transpile the JSX for the browser. With esbuild, files ending in <i>.jsx</i> are transpiled out of the box.
 
-### CSS
+### Development environment
 
-Let's add some CSS to our application. Let's create a new <i>src/index.css</i> file:
+So far, every change requires running <i>npm run build</i> and manually refreshing the browser, a slow loop that quickly becomes tedious. esbuild's built-in [development server](https://esbuild.github.io/api/#serve) solves this. Add a <i>dev</i> script to <i>package.json</i>:
 
-```css
-.container {
-  margin: 10px;
-  background-color: #dee8e4;
-}
-```
-
-Then let's use the style in the <i>App</i> component:
-
-```js
-const App = () => {
-  return (
-    <div className="container">
-      hello webpack
-    </div>
-  )
-}
-```
-
-And we import the style in the <i>index.js</i> file:
-
-```js
-import './index.css'
-```
-
-This will cause the transpilation process to break:
-
-![webpack failure missing loader for css/style](../../images/7/23x.png)
-
-When using CSS, we have to use [css](https://webpack.js.org/loaders/css-loader/) and [style](https://webpack.js.org/loaders/style-loader/) loaders:
-
-```js
+```json
 {
-  rules: [
-    {
-      test: /\.js$/,
-      loader: 'babel-loader',
-      options: {
-        presets: ['@babel/preset-react', '@babel/preset-env'],
+  "scripts": {
+    "build": "esbuild src/main.jsx --bundle --minify --sourcemap --outfile=dist/main.js --jsx=automatic",
+    "serve": "npx serve dist",
+    "dev": "esbuild src/main.jsx --bundle --outfile=dist/main.js --jsx=automatic --servedir=./dist --watch" // highlight-line
+  }
+}
+```
+
+Running <i>npm run dev</i> does two things at once. Firstly [--watch](https://esbuild.github.io/api/#watch) tells esbuild to watch all imported source files for changes and rebuild the bundle automatically whenever any of them is saved. Secondly [--servedir](https://esbuild.github.io/api/#serve) starts a lightweight HTTP server that serves the contents of the <i>dist</i> directory, your <i>index.html</i> and the freshly built <i>main.js</i> at <i>http://localhost:8000</i>.
+
+The <i>--servedir</i> flag is what makes both pieces work together: without it, esbuild would only rebuild in watch mode but not serve anything. With it, the server always delivers the latest bundle so you only need to refresh the browser after saving a file.
+
+Note that unlike Vite's dev server, esbuild does not support hot module replacement. Changes to your source code require a manual browser refresh to take effect.
+
+The clarity of esbuild's interface illustrates what a bundler fundamentally does: it takes an entry point, follows all imports, and produces an optimized output. Vite builds on top of this foundation and adds the developer experience layer, a dev server, hot module replacement, and sensible defaults for React projects.
+
+Now that we have a clearer picture of what bundling and transpilation fundamentally involve, let us return to Vite and look at how it can be configured.
+
+### Vite configuration
+
+For most React projects, Vite works without any configuration at all. However, when you do need to customize behavior, you edit <i>vite.config.js</i> (or <i>vite.config.ts</i>).
+
+A minimal Vite configuration for a React project looks like this:
+
+```js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+})
+```
+
+The <i>@vitejs/plugin-react</i> plugin enables JSX transformation, fast refresh (hot module replacement that preserves component state), and other React-specific features.
+
+#### Development server configuration
+
+You can configure the development server's port and other settings under the <i>server</i> key:
+
+```js
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 3000,
+    open: true,        // open browser automatically
+  },
+})
+```
+
+#### Proxying API requests
+
+When developing locally, your React app typically runs on one port (e.g., 3000) while your backend runs on another (e.g., 3001). The browser's same-origin policy would normally block requests between them. Vite's proxy setting solves this without requiring CORS configuration on the backend:
+
+```js
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 3000,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
       },
     },
-    // highlight-start
-    {
-      test: /\.css$/,
-      use: ['style-loader', 'css-loader'],
-    },
-    // highlight-end
+  },
+})
+```
+
+With this configuration, any request your React app makes to <i>/api/notes</i> is automatically forwarded to <i>http://localhost:3001/api/notes</i> by Vite's dev server. Your frontend code never needs to include <i>localhost:3001</i> in its URLs during development.
+
+#### Environment variables
+
+Vite has built-in support for environment variables using <i>.env</i> files. This is the modern replacement for manually injecting constants into the bundle.
+
+Create a <i>.env</i> file in the project root:
+
+```
+VITE_BACKEND_URL=http://localhost:3001/api/notes
+```
+
+And a <i>.env.production</i> file for production values:
+
+```
+VITE_BACKEND_URL=https://myapp.fly.dev/api/notes
+```
+
+**Important:** all environment variables exposed to the browser must be prefixed with <i>VITE_</i>. Variables without this prefix remain server-side only and are not included in the bundle. This is a deliberate security measure to prevent accidentally leaking secrets.
+
+Access the variable in your application code via <i>import.meta.env</i>:
+
+```js
+const App = () => {
+  const notes = useNotes(import.meta.env.VITE_BACKEND_URL)
+
+  return (
+    <div>
+      {notes.length} notes on server {import.meta.env.VITE_BACKEND_URL}
+    </div>
+  )
+}
+```
+
+Vite automatically selects the correct <i>.env</i> file based on the mode:
+
+- <i>npm run dev</i> uses <i>.env</i> and <i>.env.development</i>
+- <i>npm run build</i> uses <i>.env</i> and <i>.env.production</i>
+
+Add <i>.env.production</i> to <i>.gitignore</i> if it contains sensitive values, and use <i>.env.example</i> to document what variables are required.
+
+#### Transpilation
+
+Vite handles code transpilation automatically. During development, esbuild transpiles your TypeScript and JSX on demand. It is fast enough to do this per-file without a noticeable delay. During production builds, Rollup handles the bundling while esbuild handles transpilation.
+
+The default transpilation target in Vite is modern browsers that support native ES modules (Chrome 87+, Firefox 78+, Safari 14+, Edge 88+). If you need to support older browsers, you can configure the target explicitly and add the <i>@vitejs/plugin-legacy</i> plugin:
+
+```bash
+npm install --save-dev @vitejs/plugin-legacy
+```
+
+```js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import legacy from '@vitejs/plugin-legacy'
+
+export default defineConfig({
+  plugins: [
+    react(),
+    legacy({
+      targets: ['defaults', 'not IE 11'],
+    }),
   ],
-}
+})
 ```
 
-The job of the [css loader](https://webpack.js.org/loaders/css-loader/) is to load the <i>CSS</i> files and the job of the [style loader](https://webpack.js.org/loaders/style-loader/) is to generate and inject a <i>style</i> element that contains all of the styles of the application.
+The legacy plugin automatically generates a separate bundle for older browsers using Babel.
 
-With this configuration, the CSS definitions are included in the <i>main.js</i> file of the application. For this reason, there is no need to separately import the <i>CSS</i> styles in the main <i>index.html</i> file.
+#### CSS
 
-If needed, the application's CSS can also be generated into its own separate file, by using the [mini-css-extract-plugin](https://github.com/webpack-contrib/mini-css-extract-plugin).
-
-When we install the loaders:
-
-```bash
-npm install style-loader css-loader --save-dev
-```
-
-The bundling will succeed once again and the application gets new styles.
-
-### Webpack-dev-server
-
-The current configuration makes it possible to develop our application but the workflow is awful (to the point where it resembles the development workflow with Java). Every time we make a change to the code, we have to bundle it and refresh the browser to test it.
-
-The [webpack-dev-server](https://webpack.js.org/guides/development/#using-webpack-dev-server) offers a solution to our problems. Let's install it with the command:
-
-```bash
-npm install --save-dev webpack-dev-server
-```
-
-Let's define an npm script for starting the dev server:
+Vite handles CSS without any configuration. Simply import a CSS file from your JavaScript:
 
 ```js
-{
-  // ...
-  "scripts": {
-    "build": "webpack --mode=development",
-    "start": "webpack serve --mode=development" // highlight-line
-  },
-  // ...
-}
-```
-
-Let's also add a new <i>devServer</i> property to the configuration object in the <i>webpack.config.js</i> file:
-
-```js
-const config = {
-  entry: './src/index.js',
-  output: {
-    path: path.resolve(__dirname, 'build'),
-    filename: 'main.js',
-  },
-  // highlight-start
-  devServer: {
-    static: path.resolve(__dirname, 'build'),
-    compress: true,
-    port: 3000,
-  },
-  // highlight-end
-  // ...
-};
-```
-
-The _npm start_ command will now start the dev-server at port 3000, meaning that our application will be available by visiting <http://localhost:3000> in the browser. When we make changes to the code, the browser will automatically refresh the page.
-
-The process for updating the code is fast. When we use the dev-server, the code is not bundled the usual way into the <i>main.js</i> file. The result of the bundling exists only in memory.
-
-Let's extend the code by changing the definition of the <i>App</i> component as shown below:
-
-```js
-import React, { useState } from 'react'
 import './index.css'
-
-const App = () => {
-  const [counter, setCounter] = useState(0)
-
-  return (
-    <div className="container">
-      hello webpack {counter} clicks
-      <button onClick={() => setCounter(counter + 1)}>
-        press
-      </button>
-    </div>
-  )
-}
-
-export default App
 ```
 
-The application works nicely and the development workflow is quite smooth.
+Vite will process it and include it in the build. In production, CSS is extracted into a separate file. During development, it is injected via <i>&lt;style&gt;</i> tags with hot reload support.
 
-### Source maps
-
-Let's extract the click handler into its own function and store the previous value of the counter in its own <i>values</i> state:
+Vite also natively supports [CSS Modules](https://github.com/css-modules/css-modules) for scoped styles. Any file ending in <i>.module.css</i> is treated as a CSS Module:
 
 ```js
-const App = () => {
-  const [counter, setCounter] = useState(0)
-  const [values, setValues] = useState() // highlight-line
+import styles from './App.module.css'
 
-//highlight-start
-  const handleClick = () => {
-    setCounter(counter + 1)
-    setValues(values.concat(counter))
-  }
-//highlight-end
-
-  return (
-    <div className="container">
-      hello webpack {counter} clicks
-      <button onClick={handleClick}> // highlight-line
-        press
-      </button>
-    </div>
-  )
-}
+const App = () => (
+  <div className={styles.container}>
+    hello vite
+  </div>
+)
 ```
 
-The application no longer works and the console will display the following error:
-
-![devtools console cannot concat on undefined in handleClick](../../images/7/25.png)
-
-We know that the error is in the onClick method, but if the application was any larger the error message would be quite difficult to track down:
-
-```
-App.js:27 Uncaught TypeError: Cannot read property 'concat' of undefined
-    at handleClick (App.js:27)
-```
-
-The location of the error indicated in the message does not match the actual location of the error in our source code. If we click the error message, we notice that the displayed source code does not resemble our application code:
-
-![devtools source does not show our source code](../../images/7/26.png)
-
-Of course, we want to see our actual source code in the error message.
-
-Luckily, fixing this error message is quite easy. We will ask webpack to generate a so-called [source map](https://webpack.js.org/configuration/devtool/) for the bundle, which makes it possible to <i>map errors</i> that occur during the execution of the bundle to the corresponding part in the original source code.
-
-The source map can be generated by adding a new <i>devtool</i> property to the configuration object with the value 'source-map':
-
-```js
-const config = {
-  entry: './src/index.js',
-  output: {
-    // ...
-  },
-  devServer: {
-    // ...
-  },
-  devtool: 'source-map', // highlight-line
-  // ..
-};
-```
-
-Webpack has to be restarted when we make changes to its configuration. It is also possible to make webpack watch for changes made to itself, but we will not do that this time.
-
-The error message is now a lot better
-
-![devtools console showing concat error at different line](../../images/7/27.png)
-
-since it refers to the code we wrote:
-
-![devtools source showing our actual code with values.concat](../../images/7/27eb.png)
-
-Generating the source map also makes it possible to use the Chrome debugger:
-
-![devtools debugger paused just before offending line](../../images/7/28.png)
-
-Let's fix the bug by initializing the state of <i>values</i> as an empty array:
-
-```js
-const App = () => {
-  const [counter, setCounter] = useState(0)
-  const [values, setValues] = useState([])
-  // ...
-}
-```
-
-### Minifying the code
-
-When we deploy the application to production, we are using the <i>main.js</i> code bundle that is generated by webpack. The size of the <i>main.js</i> file is 1009487 bytes even though our application only contains a few lines of our code. The large file size is because the bundle also contains the source code for the entire React library. The size of the bundled code matters since the browser has to load the code when the application is first used. With high-speed internet connections, 1009487 bytes is not an issue, but if we were to keep adding more external dependencies, loading speeds could become an issue, particularly for mobile users.
-
-If we inspect the contents of the bundle file, we notice that it could be greatly optimized in terms of file size by removing all of the comments. There's no point in manually optimizing these files, as there are many existing tools for the job.
-
-The optimization process for JavaScript files is called <i>minification</i>. One of the leading tools intended for this purpose is [UglifyJS](https://github.com/mishoo/UglifyJS/).
-
-Starting from version 4 of webpack, the minification plugin does not require additional configuration to be used. It is enough to modify the npm script in the <i>package.json</i> file to specify that webpack will execute the bundling of the code in <i>production</i> mode:
-
-```json
-{
-  "name": "webpack-part7",
-  "version": "0.0.1",
-  "description": "practicing webpack",
-  "scripts": {
-    "build": "webpack --mode=production", // highlight-line
-    "start": "webpack serve --mode=development"
-  },
-  "license": "MIT",
-  "dependencies": {
-    // ...
-  },
-  "devDependencies": {
-    // ...
-  }
-}
-```
-
-When we bundle the application again, the size of the resulting <i>main.js</i> decreases substantially:
+CSS preprocessors like [Sass](https://sass-lang.com/) can be added by simply installing the preprocessor, no plugin or configuration needed:
 
 ```bash
-$ ls -l build/main.js
--rw-r--r--  1 mluukkai  ATKK\hyad-all  227651 Feb  7 15:58 build/main.js
+npm install --save-dev sass
 ```
 
-The output of the minification process resembles old-school C code; all of the comments and even unnecessary whitespace and newline characters have been removed, variable names have been replaced with a single character.
+After that, <i>.scss</i> files work automatically.
+
+#### Minification
+
+When running <i>npm run build</i>, Vite minifies the output. Minification removes whitespace and comments, shortens variable names, and applies other size optimizations. The result is a much smaller file that loads faster in the browser.
+
+Vite uses esbuild for JavaScript minification and a built-in CSS minifier for stylesheets.
+
+#### Source maps
+
+Source maps allow browser developer tools to map errors and breakpoints back to your original source code rather than the minified bundle. Without them, a stack trace pointing to line 1 of <i>main.js</i> is nearly useless for debugging.
+
+In development, Vite generates source maps automatically. For production builds, you can enable them explicitly:
 
 ```js
-function h(){if(!d){var e=u(p);d=!0;for(var t=c.length;t;){for(s=c,c=[];++f<t;)s&&s[f].run();f=-1,t=c.length}s=null,d=!1,function(e){if(o===clearTimeout)return clearTimeout(e);if((o===l||!o)&&clearTimeout)return o=clearTimeout,clearTimeout(e);try{o(e)}catch(t){try{return o.call(null,e)}catch(t){return o.call(this,e)}}}(e)}}a.nextTick=function(e){var t=new Array(arguments.length-1);if(arguments.length>1)
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    sourcemap: true,
+  },
+})
 ```
 
-### Development and production configuration
+Note that production source maps increase build time and expose your source code to anyone who looks at the network tab. In many cases it is better to upload source maps to an error monitoring service (such as Sentry) and keep them off the public server.
 
-Next, let's add a backend to our application by repurposing the now-familiar note application backend.
+#### Plugins
 
-Let's store the following content in the <i>db.json</i> file:
+Vite's functionality is extended through [plugins](https://vite.dev/plugins/). The plugin ecosystem has grown rapidly and covers most common needs. Some widely used plugins include:
 
-```json
-{
-  "notes": [
-    {
-      "important": true,
-      "content": "HTML is easy",
-      "id": "5a3b8481bb01f9cb00ccb4a9"
-    },
-    {
-      "important": false,
-      "content": "Mongo can save js objects",
-      "id": "5a3b920a61e8c8d3f484bdd0"
-    }
-  ]
-}
-```
+- <i>@vitejs/plugin-react</i> — React support (JSX, fast refresh)
+- <i>@vitejs/plugin-legacy</i> — legacy browser support
+- <i>vite-plugin-svgr</i> — import SVG files as React components
+- <i>rollup-plugin-visualizer</i> — bundle size analysis
 
-Our goal is to configure the application with webpack in such a way that, when used locally, the application uses the json-server available in port 3001 as its backend.
+Plugins are specified in the <i>plugins</i> array in <i>vite.config.js</i>. They follow the same interface as Rollup plugins, so many Rollup plugins also work with Vite.
 
-The bundled file will then be configured to use the backend available at the <https://notes2023.fly.dev/api/notes> URL.
+#### Polyfills
 
-We will install <i>axios</i>, start the json-server, and then make the necessary changes to the application. For the sake of changing things up, we will fetch the notes from the backend with our [custom hook](/en/part7/custom_hooks) called _useNotes_:
+A <i>polyfill</i> is code that implements a feature for browsers that do not natively support it. Transpilation alone is not sufficient for features that are syntactically valid but unimplemented. For example, a browser might parse <i>Promise</i> correctly but have no implementation of it.
 
-```js
-// highlight-start
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+With Vite, polyfills are handled by the plugin <i>@vitejs/plugin-legacy</i>, which automatically includes the necessary polyfills based on your browser targets. If you need a specific polyfill without the legacy plugin, you can install it directly and import it at the top of your entry file.
 
-const useNotes = (url) => {
-  const [notes, setNotes] = useState([])
-
-  useEffect(() => {
-    axios.get(url).then(response => {
-      setNotes(response.data)
-    })
-  }, [url])
-
-  return notes
-}
-// highlight-end
-
-const App = () => {
-  const [counter, setCounter] = useState(0)
-  const [values, setValues] = useState([])
-  const url = 'https://notes2023.fly.dev/api/notes' // highlight-line
-  const notes = useNotes(url) // highlight-line
-
-  const handleClick = () => {
-    setCounter(counter + 1)
-    setValues(values.concat(counter))
-  }
-
-  return (
-    <div className="container">
-      hello webpack {counter} clicks
-      <button onClick={handleClick}>press</button>
-      <div>{notes.length} notes on server {url}</div> // highlight-line
-    </div>
-  )
-}
-
-export default App
-```
-
-The address of the backend server is currently hardcoded in the application code. How can we change the address in a controlled fashion to point to the production backend server when the code is bundled for production?
-
-Webpack's configuration function has two parameters, <i>env</i> and <i>argv</i>. We can use the latter to find out the <i>mode</i> defined in the npm script:
-
-```js
-const path = require('path')
-
-const config = (env, argv) => { // highlight-line
-  console.log('argv.mode:', argv.mode)
-  return {
-    // ...
-  }
-}
-
-module.exports = config
-```
-
-Now, if we want, we can set Webpack to work differently depending on whether the application's operating environment, or <i>mode</i>, is set to production or development.
-
-We can also use webpack's [DefinePlugin](https://webpack.js.org/plugins/define-plugin/) for defining <i>global default constants</i> that can be used in the bundled code. Let's define a new global constant <i>BACKEND\_URL</i> that gets a different value depending on the environment that the code is being bundled for:
-
-```js
-const path = require('path')
-const webpack = require('webpack') // highlight-line
-
-const config = (env, argv) => {
-  console.log('argv', argv.mode)
-
-  // highlight-start
-  const backend_url = argv.mode === 'production'
-    ? 'https://notes2023.fly.dev/api/notes'
-    : 'http://localhost:3001/notes'
-  // highlight-end
-
-  return {
-    entry: './src/index.js',
-    output: {
-      path: path.resolve(__dirname, 'build'),
-      filename: 'main.js'
-    },
-    devServer: {
-      static: path.resolve(__dirname, 'build'),
-      compress: true,
-      port: 3000,
-    },
-    devtool: 'source-map',
-    module: {
-      // ...
-    },
-    // highlight-start
-    plugins: [
-      new webpack.DefinePlugin({
-        BACKEND_URL: JSON.stringify(backend_url)
-      })
-    ]
-    // highlight-end
-  }
-}
-
-module.exports = config
-```
-
-The global constant is used in the following way in the code:
-
-```js
-const App = () => {
-  const [counter, setCounter] = useState(0)
-  const [values, setValues] = useState([])
-  const notes = useNotes(BACKEND_URL) // highlight-line
-
-  // ...
-  return (
-    <div className="container">
-      hello webpack {counter} clicks
-      <button onClick={handleClick} >press</button>
-      <div>{notes.length} notes on server {BACKEND_URL}</div> // highlight-line
-    </div>
-  )
-}
-```
-
-If the configuration for development and production differs a lot, it may be a good idea to [separate the configuration](https://webpack.js.org/guides/production/) of the two into their own files.
-
-Now, if the application is started with the command _npm start_ in development mode, it fetches the notes from the address <http://localhost:3001/notes>. The version bundled with the command _npm run build_ uses the address <https://notes2023.fly.dev/api/notes> to get the list of notes.
-
-We can inspect the bundled production version of the application locally by executing the following command in the <i>build</i> directory:
-
-```bash
-npx static-server
-```
-
-By default, the bundled application will be available at <http://localhost:9080>.
-
-### Polyfill
-
-Our application is finished and works with all relatively recent versions of modern browsers, except for Internet Explorer. The reason for this is that, because of _axios_, our code uses [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise), and no existing version of IE supports them:
-
-![browser compatibility chart highlighting how bad internet explorer is](../../images/7/29.png)
-
-There are many other things in the standard that IE does not support. Something as harmless as the [find](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find) method of JavaScript arrays exceeds the capabilities of IE:
-
-![browser compatibility chart showing IE does not support find method](../../images/7/30.png)
-
-In these situations, it is not enough to transpile the code, as transpilation simply transforms the code from a newer version of JavaScript to an older one with wider browser support. IE understands Promises syntactically but it simply has not implemented their functionality. The _find_ property of arrays in IE is simply <i>undefined</i>.
-
-If we want the application to be IE-compatible, we need to add a [polyfill](https://remysharp.com/2010/10/08/what-is-a-polyfill), which is code that adds the missing functionality to older browsers.
-
-Polyfills can be added with the help of [webpack and Babel](https://babeljs.io/docs/usage/polyfill/) or by installing one of many existing polyfill libraries.
-
-The polyfill provided by the [promise-polyfill](https://www.npmjs.com/package/promise-polyfill) library is easy to use. We simply have to add the following to our existing application code:
-
-```js
-import PromisePolyfill from 'promise-polyfill'
-
-if (!window.Promise) {
-  window.Promise = PromisePolyfill
-}
-```
-
-If the global _Promise_ object does not exist, meaning that the browser does not support Promises, the polyfilled Promise is stored in the global variable. If the polyfilled Promise is implemented well enough, the rest of the code should work without issues.
-
-One exhaustive list of existing polyfills can be found [here](https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-browser-Polyfills).
-
-The browser compatibility of different APIs can be checked by visiting [https://caniuse.com](https://caniuse.com) or [Mozilla's website](https://developer.mozilla.org/en-US/).
+You can check browser support for specific APIs at [https://caniuse.com](https://caniuse.com) or [Mozilla's MDN documentation](https://developer.mozilla.org/).
 
 </div>
+

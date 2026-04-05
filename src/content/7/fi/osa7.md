@@ -10,7 +10,8 @@ Kurssin seitsemäs osa käsittelee montaa teemaa. Ensin tutustutaan React router
 
 Kurssin seitsemännen osan teemoihin liittyvät myös useat yhteistyökumppaniemme asiantuntijoiden vierailuluennoista, jotka löydät <a href='https://www.youtube.com/playlist?list=PLumQiZ25uijis31zaRL7rhzLalSwLqUtm'><span style='text-decoration: underline;'>täältä</span></span></a>.
   
-<i>Osa päivitetty 26.8.2023</i>
-- <i>Create React App korvattu Vitellä</i>
+<i>Osa päivitetty 6.4.2026</i>
+- <i>React router, UI kirjstot ja Styled siirretty osaan 5</i>
+- <i>Webpack korvattu esbuild:illa</i>
 
 </div>

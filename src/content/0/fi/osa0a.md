@@ -276,7 +276,8 @@ Kurssilla ei ole vuosittaisia versiota. Kurssi on siis käynnissä koko ajan. Jo
 Muutoksista huolimatta <i>kaikki jo tehdyt palautukset säilyvät voimassa</i>, eli voit jatkaa kurssia päivityksistä huolimatta normaaliin tapaan.
 
 Viimeaikaisia isompia muutoksia
-- Osa 6 (5.4.2026): Reduxkorvattu Zustandilla, useReducer siirretty osaan 7
+- Osa 7 (6.4.2026): Webpack korvattu esbuildilla
+- Osa 6 (5.4.2026): Redux korvattu Zustandilla, useReducer siirretty osaan 7
 - Osa 5 (31.3.2026): Cypressiä käsittelevä osuus poistettu. React Router ja tyylikirjastot siirretty osasta 7 tähän osaan
 - Osat 9 ja 11-13 (maaliskuu 2026): sisältö päivitetty ja materiaali siirretty uuteen osoitteeseen
 - Osa 8: (3.1.2026) Apollo Server päivitetty versioon v5. Apollo Client päivitetty versioon v4. Backend-koodin refaktorointi siirretty osaan 8c. Lukuisia muita pieniä parannuksia.
