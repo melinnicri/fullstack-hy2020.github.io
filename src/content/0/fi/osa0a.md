@@ -70,37 +70,33 @@ Voit osallistua kokeeseen vasta siinä vaiheessa, kun olet tehnyt riittävästi 
 #### Osa 6 - Full Stack ‑websovelluskehitys, lisäosa 1 (1 op, CSM141082)
 Suorittamalla vähintään 127 tehtävää kurssin osista 0–7 ydinkurssin suorittamisen yhteydessä, voit laajentaa suoritustasi yhdellä opintopisteellä. 
 -	Tee vähintään 127 tehtävää osista 0–7. 
--	[Ilmoittaudu tähän osaan Avoimen yliopiston kautta.](https://www.avoin.helsinki.fi/palvelut/esittely.aspx?s=otm-abc0a702-3d35-496f-87b9-5c7845a9367b)
+-	[Ilmoittaudu tähän osaan Avoimen yliopiston kautta.](https://www.avoin.helsinki.fi/palvelut/esittely.aspx?s=otm-759cfee1-370b-4200-8e11-dc86b1a8ed88)
 -	[Pyydä suoritusmerkintää](https://fullstackopen.com/osa0/yleista#suoritusmerkinnan-pyytaminen) tästä osasta. 
 
 #### Osa 7 - Full Stack ‑websovelluskehitys, lisäosa 2 (1 op, CSM141083)
 
 Suorittamalla vähintään 138 tehtävää kurssin osista 0–7 ydinkurssin suorittamisen yhteydessä, voit laajentaa suoritustasi yhdellä opintopisteellä. 
 -	Tee vähintään 138 tehtävää osista 0–7. 
--	[Ilmoittaudu tähän osaan Avoimen yliopiston kautta.](https://www.avoin.helsinki.fi/palvelut/esittely.aspx?s=otm-3149cc5e-8d83-4471-8eba-870093a2f01f)
+-	[Ilmoittaudu tähän osaan Avoimen yliopiston kautta.](https://www.avoin.helsinki.fi/palvelut/esittely.aspx?s=otm-4142645d-5690-4527-9d57-79bd1fbc8770)
 -	[Pyydä suoritusmerkintää](https://fullstackopen.com/osa0/yleista#suoritusmerkinnan-pyytaminen) tästä osasta. 
 
 #### Osa 8 - Full Stack ‑websovelluskehitys: GraphQL (1 op, CSM14113)
 
 Suorittamalla vähintään 22/26 tehtävää kurssin kahdeksannesta, GraphQL:ää käsittelevästä osasta, voit laajentaa suoritustasi yhdellä opintopisteellä. Voit tehdä GraphQL:ää käsittelevän osuuden periaatteessa jo osan 5 jälkeen, sillä sen sisältö ei riipu osista 6 ja 7.
 -	Tee vähintään 22/26 tehtävää osasta 8. 
--	[Ilmoittaudu tähän osaan Avoimen yliopiston kautta.](https://www.avoin.helsinki.fi/palvelut/esittely.aspx?s=otm-4b912f04-d928-4a2d-aed7-8d8b2cefd397)
+-	[Ilmoittaudu tähän osaan Avoimen yliopiston kautta.](https://www.avoin.helsinki.fi/palvelut/esittely.aspx?s=otm-f29bbf9e-3dfd-42d3-bdb8-c62be94932f8)
 -	[Pyydä suoritusmerkintää](https://fullstackopen.com/osa0/yleista#suoritusmerkinnan-pyytaminen) tästä osasta. 
 
 #### Osa 9 - Full Stack ‑websovelluskehitys: TypeScript (1 op, CSM14110, englanniksi)
 
-Suorittamalla vähintään 24/30 tehtävää kurssin yhdeksännestä, TypeScriptiä käsittelevästä osasta, voit laajentaa suoritustasi yhdellä opintopisteellä. Osa kannattaa suorittaa vasta sen jälkeen, kun olet tehnyt osat 0–7.
-
--	Tee vähintään 24/30 tehtävää osasta 9.
--	[Ilmoittaudu tähän osaan Avoimen yliopiston kautta.](https://www.avoin.helsinki.fi/palvelut/esittely.aspx?s=otm-8d68ba22-4d46-479c-8990-32ddc83f5a5f)
--	[Pyydä suoritusmerkintää](https://fullstackopen.com/osa0/yleista#suoritusmerkinnan-pyytaminen) tästä osasta. 
+Materiaali siirretty osoitteeseen <a href="https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-typescript">https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-typescript</a>. 
 
 #### Osa 10 - Full Stack ‑websovelluskehitys: React Native (2 op, CSM14111, englanniksi)
 
 Suorittamalla 25 tehtävää kurssin kymmenennestä, React Nativea käsittelevästä osasta, voit laajentaa suoritustasi kahdella opintopisteellä. Lisätietoja osan esitietovaatimuksista, tehtävien palauttamisesta ja opintopisteistä löydät [osasta 10](/en/part10/introduction_to_react_native).
 
 -	Tee vähintään 25 tehtävää osasta 10. 
--	[Ilmoittaudu tähän osaan Avoimen yliopiston kautta.](https://www.avoin.helsinki.fi/palvelut/esittely.aspx?s=otm-e859336d-9d63-47ac-9906-a7da74cae32d)
+-	[Ilmoittaudu tähän osaan Avoimen yliopiston kautta.](https://www.avoin.helsinki.fi/palvelut/esittely.aspx?s=otm-af7b3535-d187-4999-985e-518c66a4a09b)
 -	[Pyydä suoritusmerkintää](https://fullstackopen.com/osa0/yleista#suoritusmerkinnan-pyytaminen) tästä osasta. 
 
 #### Osa 11 - Full Stack ‑websovelluskehitys: jatkuva integraatio (1 op, CSM14112, englanniksi)

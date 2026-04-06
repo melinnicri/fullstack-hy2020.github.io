@@ -58,7 +58,7 @@ const InfoBanner = ({ visible, onHide }) => {
       </div>
       <div style={buttonDiv}>
         <button style={buttonStyle} onClick={onHide}>
-          x
+          <div style={textStyle}>x</div>
         </button>
       </div>
     </div>
