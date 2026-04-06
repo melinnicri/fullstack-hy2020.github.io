@@ -12,6 +12,6 @@ The seventh part of the course covers several topics. We begin by looking at how
 - <i>React router, UI libraries and Styled components moved to part 5</i>
 - <i>Webpack replaced with esbuild</i>
 - <i>Error boundaries and keeping the frontend and backend in a single repository covered</i>
-- <i>Two new exercises</i>
+- <i>Some of the exercices changed</i>
 
 </div>

@@ -49,13 +49,20 @@ const InfoBanner = ({ visible, onHide }) => {
       <div style={textStyle}>
         <div style={{ marginBottom: 20 }}>
           <div style={{ marginBottom: 10 }}>
-            Material of Part 11 has been moved to <a style={linkStyle} href="https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-continuous-integration">https://courses.mooc.fi/org/uh-cs/courses/full-stack-open-continuous-integration</a>
+            <b>Changes in part 7 (6th April 2026):</b>
+            <ul style={{ marginTop: 6, paddingLeft: 20 }}>
+              <li><i>React router, UI libraries and Styled components moved to part 5</i></li>
+              <li><i>Webpack replaced with esbuild</i></li>
+              <li><i>Error boundaries and keeping the frontend and backend in a single repository covered</i></li>
+              <li><i>Some of the hook exercises have changed</i></li>
+              <li><i>Two new exercises for the blog list</i></li>
+            </ul>
           </div>
-          <div style={{ marginBottom: 10 }}>
-            The content and exercises are still same, there is a change how exercises are submitted.
+           <div style={{ marginBottom: 10 }}>
+            There may still be some minor changes coming to the blog list exercise set in the next few days.
           </div>
           <div>
-            The old content is still found <a style={linkStyle} href="https://github.com/fullstack-hy2020/fullstack-hy2020.github.io/tree/7599b17c02b056fcad4f12d8708f0e07980b7564/src/content/11">here</a>. 
+            The old content is still found <a style={linkStyle} href="https://github.com/fullstack-hy2020/fullstack-hy2020.github.io/tree/7599b17c02b056fcad4f12d8708f0e07980b7564/src/content/7/en">here</a>. 
           </div>
         </div>
       </div>

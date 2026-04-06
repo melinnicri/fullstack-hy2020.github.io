@@ -7,9 +7,9 @@ lang: en
 
 <div class="content">
 
-The exercises in this part of the course differ a bit from the ones before. As usual, there are some exercises related to the theory of the <i>this</i> chapter. The other chapters of this part do not have separate exercises.
+The exercises in this part of the course differ a bit from the ones before. As usual, there are some exercises related to the theory of this chapter. The other chapters of this part do not have separate exercises. 
 
-The rest of the exercises in this part are found [here](/en/part7/exercises_extending_the_bloglist).
+In addition, this part contains a larger exercise series that extends the BlogList application built in parts 4 and 5. Those exercises are found [here](/en/part7/exercises_extending_the_bloglist).
 
 ### React Hooks
 
@@ -588,13 +588,22 @@ The internet is starting to fill up with more and more helpful material related 
 
 <div class="tasks">
 
-### Exercises 7.1.-7.5.
+### Exercises 7.1.-7.6.
+
+Let's once again return to working with anecdotes. Use the app found in the repository https://github.com/fullstack-hy2020/routed-anecdotes as the starting point for the exercises.
+
+If you clone the project into an existing git repository, remember to delete the git configuration of the cloned application:
+
+cd routed-anecdotes   // go first to directory of the cloned repository
+rm -rf .git
+The application starts the usual way, but first, you need to install its dependencies:
+
+npm install
+npm run dev
 
 #### 7.1: useField hook
 
-Implement a <i>useField</i> custom hook in the file <i>src/hooks/index.js</i>. The hook should manage the state of a single form input field and return an object with the following properties: <i>type</i>, <i>value</i>, and <i>onChange</i>.
-
-One natural place to save the custom hooks of your application is in the <i>/src/hooks/index.js</i> file.
+Copy the <i>useField</i> custom hook in the file <i>src/hooks/index.js</i>. The hook should manage the state of a single form input field and return an object with the following properties: <i>type</i>, <i>value</i>, and <i>onChange</i>.
 
 If you use the [named export](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export#Description) instead of the default export:
 
@@ -633,13 +642,13 @@ const App = () => {
 }
 ```
 
-Create a simple form that uses the hook for at least two input fields and displays the current values below the form.
+Use the hook in the anecdote creation form.
 
 #### 7.2: useField with reset
 
 Add a button to the form that clears all input fields:
 
-![browser anecdotes with reset button](../../images/7/61ea.png)
+![browser anecdotes with reset button](../../images/7/e2.png)
 
 Expand the <i>useField</i> hook so that it exposes a <i>reset</i> function for clearing the field value.
 
@@ -653,7 +662,7 @@ We will return to this warning in the next exercise.
 
 If your solution did not cause a warning to appear in the console, you have already finished this exercise.
 
-If you see the _Invalid value for prop \`reset\` on \<input\> tag_ warning in the console, make the necessary changes to get rid of it.
+If you see the <i>Invalid value for prop \`reset\` on \<input\> tag</i> warning in the console, make the necessary changes to get rid of it.
 
 The reason for this warning is that after making the changes to your application, the following expression:
 
@@ -686,108 +695,111 @@ One simple fix would be to not use the spread syntax and write all of the forms 
 
 If we were to do this, we would lose much of the benefit provided by the <i>useField</i> hook. Instead, come up with a solution that fixes the issue, but is still easy to use with the spread syntax.
 
-#### 7.4: Country hook
+#### 7.4: useAnecdotes, step1
 
-Use the code from <https://github.com/fullstack-hy2020/country-hook> as your starting point.
+The project has a JSON server already configured. YOu can start it with:
 
-The application can be used to search for a country's details from the service in <https://studies.cs.helsinki.fi/restcountries/>. If a country is found, its details are displayed:
-
-![browser displaying country details](../../images/7/69ea.png)
-
-If no country is found, a message is displayed to the user:
-
-![browser showing country not found](../../images/7/70ea.png)
-
-The application is otherwise complete, but you have to implement a custom hook <i>useCountry</i> that fetches the details of the country whose name is given to the hook as a parameter. Use a <i>useEffect</i> hook inside <i>useCountry</i> for the HTTP request.
-
-Note that in this exercise it is essential to use useEffect's [second parameter](https://react.dev/reference/react/useEffect#parameters) array to control when the effect function is executed.
-
-#### 7.5: Ultimate Hooks
-
-The code of the application responsible for communicating with the backend of the note application of the previous parts looks like this:
-
-```js
-import axios from 'axios'
-const baseUrl = '/api/notes'
-
-let token = null
-
-const setToken = newToken => {
-  token = `bearer ${newToken}`
-}
-
-const getAll = async () => {
-  const response = await axios.get(baseUrl)
-  return response.data
-}
-
-const create = async newObject => {
-  const config = {
-    headers: { Authorization: token },
-  }
-
-  const response = await axios.post(baseUrl, newObject, config)
-  return response.data
-}
-
-const update = async (id, newObject) => {
-  const response = await axios.put(`${ baseUrl }/${id}`, newObject)
-  return response.data
-}
-
-export default { getAll, create, update, setToken }
+```bash
+npm run server
 ```
 
-We notice that the code is in no way specific to the fact that our application deals with notes. Excluding the value of the _baseUrl_ variable, the same code could be reused in the blog post application for dealing with the communication with the backend.
+This starts a JSON Server backend that exposes the anecdotes collection as a REST resource at <i>http://localhost:3001/anecdotes</i>.
 
-Extract the code for communicating with the backend into its own _useResource_ hook. It is sufficient to implement fetching all resources and creating a new resource.
+The existing <i>services/anecdotes.js</i> file contains the functions needed to communicate with the backend (except for the last exercise). Note that the service uses the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) instead of Axios for HTTP requests. If you are unfamiliar with Fetch, have a look at [part 6](/en/part6/complex_state_fetch_testing#fetch-api) before continuing.
 
-You can do the exercise in the project found in the <https://github.com/fullstack-hy2020/ultimate-hooks> repository. The <i>App</i> component for the project is the following:
+
+The typical pattern for fetching data from a server in React looks like this:
+
+```js
+import { useState, useEffect } from 'react'
+import anecdoteService from './services/anecdotes'
+
+const App = () => {
+  const [anecdotes, setAnecdotes] = useState([])
+
+  useEffect(() => {
+    anecdoteService.getAll().then(data => setAnecdotes(data))
+  }, [])
+
+  // ...
+}
+```
+
+Implement a custom hook <i>useAnecdotes</i> that encapsulates this server communication. For this exercise it is enough for the hook to fetch all anecdotes Adding new ones can be handled in the next exercise.
+
+The hook should be used like this:
+
+```js
+// ...
+import { useAnecdotes } from './hooks' // highlight-line
+
+const App = () => {
+  const { anecdotes } = useAnecdotes() // highlight-line
+
+  const addAnecdote = () => {} // a dummy function to keep code from breaking
+
+  return (
+    <Router>
+      <div>
+        <h1>Software anecdotes</h1>
+        <Menu />
+        <Routes>
+          <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
+          <Route path="/create" element={<CreateNew addAnecdote={addAnecdote} />} />
+          <Route path="/about" element={<About />} />
+        </Routes>
+        <Footer />
+      </div>
+    </Router>
+  )
+}
+
+export default App
+```
+
+**A hint:** it was previously mentioned that
+
+> A helpful way to think about it (that is, how a hook works): imagine copy-pasting all the code from inside your custom hook directly into the component. 
+
+So now you should kind of do the opposite: copy-paste the relevant code from component to the hook. This includes both hooks <i>useState</i> and <i>useEffect</i>.
+
+#### 7.5: useAnecdotes, step2
+
+Extend the <i>useAnecdotes</i> hook so that it also supports creating new anecdotes. The hook should expose an <i>addAnecdote</i> function that sends the new anecdote to the server and updates the local state.
+
+The hook should now be usable like this:
+
+```js
+const { anecdotes, addAnecdote } = useAnecdotes()
+```
+
+Update the <i>App</i> component to pass <i>addAnecdote</i> to the <i>CreateNew</i> component instead of the dummy function.
+
+#### 7.6: useAnecdotes, step3
+
+Extend the <i>useAnecdotes</i> hook with a <i>deleteAnecdote</i> function that removes an anecdote from the server and updates the local state. Add a delete button next to each anecdote in the list.
+
+Also refactor the application so that neither the anecdote data nor the hook functions are passed down as props. Instead, the components that need them should call <i>useAnecdotes</i> directly. This means <i>App</i> no longer needs to act as an intermediary passing data and callbacks through the component tree.
+
+After the refactoring, <i>App</i> should look like this:
 
 ```js
 const App = () => {
-  const content = useField('text')
-  const name = useField('text')
-  const number = useField('text')
-
-  const [notes, noteService] = useResource('http://localhost:3005/notes')
-  const [persons, personService] = useResource('http://localhost:3005/persons')
-
-  const handleNoteSubmit = (event) => {
-    event.preventDefault()
-    noteService.create({ content: content.value })
-  }
- 
-  const handlePersonSubmit = (event) => {
-    event.preventDefault()
-    personService.create({ name: name.value, number: number.value})
-  }
-
   return (
-    <div>
-      <h2>notes</h2>
-      <form onSubmit={handleNoteSubmit}>
-        <input {...content} />
-        <button>create</button>
-      </form>
-      {notes.map(n => <p key={n.id}>{n.content}</p>)}
-
-      <h2>persons</h2>
-      <form onSubmit={handlePersonSubmit}>
-        name <input {...name} /> <br/>
-        number <input {...number} />
-        <button>create</button>
-      </form>
-      {persons.map(n => <p key={n.id}>{n.name} {n.number}</p>)}
-    </div>
+    <Router>
+      <div>
+        <h1>Software anecdotes</h1>
+        <Menu />
+        <Routes>
+          <Route path="/" element={<AnecdoteList />} />
+          <Route path="/create" element={<CreateNew />} />
+          <Route path="/about" element={<About />} />
+        </Routes>
+        <Footer />
+      </div>
+    </Router>
   )
 }
 ```
-
-The _useResource_ custom hook returns an array of two items just like the state hooks. The first item of the array contains all of the individual resources and the second item of the array is an object that can be used for manipulating the resource collection, like creating new ones.
-
-If you implement the hook correctly, it can be used for both notes and persons (start the server with the _npm run server_ command at port 3005).
-
-![browser showing notes and persons](../../images/5/21e.png)
 
 </div>
