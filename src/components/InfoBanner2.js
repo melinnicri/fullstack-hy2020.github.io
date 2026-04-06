@@ -52,7 +52,7 @@ const InfoBanner = ({ visible, onHide }) => {
             <strong>Significant changes in part 6:</strong> Redux has been replaced with Zustand.
           </div>
           <div>
-          If you have already started the part with Redux, finnish it quickly, the React material stays online until June 2026.
+          If you have already started the part with Redux, finish it quickly, the React material stays online until June 2026.
           </div>
         </div>
       </div>
