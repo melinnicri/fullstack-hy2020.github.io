@@ -7,7 +7,7 @@ lang: en
 
 <div class="content">
 
-The exercises in this part of the course differ a bit from the ones before. As usual, there are some exercises related to the theory of the chapter.
+The exercises in this part of the course differ a bit from the ones before. As usual, there are some exercises related to the theory of the <i>this</i> chapter. The other chapters of this part do not have separate exercises.
 
 The rest of the exercises in this part are found [here](/en/part7/exercises_extending_the_bloglist).
 
@@ -588,7 +588,7 @@ The internet is starting to fill up with more and more helpful material related 
 
 <div class="tasks">
 
-### Exercises 7.1.-7.8.
+### Exercises 7.1.-7.5.
 
 #### 7.1: useField hook
 

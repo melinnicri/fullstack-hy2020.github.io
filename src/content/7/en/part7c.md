@@ -9,11 +9,11 @@ lang: en
 
 ### Class Components
 
-During the course, we have only used React components having been defined as Javascript functions. This was not possible without the [hook](https://reactjs.org/docs/hooks-intro.html) functionality that came with version 16.8 of React. Before, when defining a component that uses state, one had to define it using Javascript's [Class](https://reactjs.org/docs/state-and-lifecycle.html#converting-a-function-to-a-class) syntax.
+During the course, we have only used React components having been defined as JavaScript functions. This was not possible without the [hook](https://reactjs.org/docs/hooks-intro.html) functionality that came with version 16.8 of React. Before, when defining a component that uses state, one had to define it using JavaScript's [Class](https://reactjs.org/docs/state-and-lifecycle.html#converting-a-function-to-a-class) syntax.
 
 It is beneficial to at least be familiar with Class Components to some extent since the world contains a lot of old React code, which will probably never be completely rewritten using the updated syntax.
 
-Let's get to know the main features of Class Components by producing yet another very familiar anecdote application. We store the anecdotes in the file <i>db.json</i> using <i>json-server</i>. The contents of the file are lifted from [here](https://github.com/fullstack-hy/misc/blob/master/anecdotes.json).
+Let's get to know the main features of Class Components by producing yet another very familiar anecdote application. We store the anecdotes in the file <i>db.json</i> using <i>json-server</i>. The contents of the file are taken from [here](https://github.com/fullstack-hy/misc/blob/master/anecdotes.json).
 
 The initial version of the Class Component looks like this
 
@@ -76,7 +76,7 @@ class App extends React.Component {
 }
 ```
 
-The component state is in the instance variable _this.state_. The state is an object having two properties. <i>this.state.anecdotes</i> is the list of anecdotes and <i>this.state.current</i> is the index of the currently-shown anecdote.
+The component state is in the instance variable <i>this.state</i>. The state is an object having two properties. <i>this.state.anecdotes</i> is the list of anecdotes and <i>this.state.current</i> is the index of the currently-shown anecdote.
 
 In Functional components, the right place for fetching data from a server is inside an [effect hook](https://react.dev/reference/react/useEffect), which is executed when a component renders or less frequently if necessary, e.g. only in combination with the first render.
 
@@ -107,7 +107,7 @@ class App extends React.Component {
 
 The callback function of the HTTP request updates the component state using the method [setState](https://react.dev/reference/react/Component#setstate). The method only touches the keys that have been defined in the object passed to the method as an argument. The value for the key <i>current</i> remains unchanged.
 
-Calling the method setState always triggers the rerender of the Class Component, i.e. calling the method _render_.
+Calling the method setState always triggers the rerender of the Class Component, i.e. calling the method <i>render</i>.
 
 We'll finish off the component with the ability to change the shown anecdote. The following is the code for the entire component with the addition highlighted:
 
@@ -184,67 +184,259 @@ const App = () => {
 }
 ```
 
-In the case of our example, the differences were minor. The biggest difference between Functional components and Class components is mainly that the state of a Class component is a single object, and that the state is updated using the method _setState_, while in Functional components the state can consist of multiple different variables, with all of them having their own update function.
+In the case of our example, the differences were minor. The biggest difference between Functional components and Class components is mainly that the state of a Class component is a single object, and that the state is updated using the method <i>setState</i>, while in Functional components the state can consist of multiple different variables, with all of them having their own update function.
 
-In some more advanced use cases, the effect hook offers a considerably better mechanism for controlling side effects compared to the lifecycle methods of Class Components.
+In 2026, Class Components are largely a historical artifact. All modern React development uses Functional components with hooks, and there is no rational reason to reach for a Class component when writing new code. The React documentation itself treats Class components as a legacy API.
 
-A notable benefit of using Functional components is not having to deal with the self-referencing _this_ reference of the Javascript class.
+### Error boundary
 
-In my opinion, and the opinion of many others, Class Components offer little benefit over Functional components enhanced with hooks, except for the so-called [error boundary](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary) mechanism, which currently (15th February 2021) isn't yet in use by functional components.
+Even though Class Components are largely obsolete, there is one situation where you still cannot avoid them: [error boundaries](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary). An error boundary is a component that catches JavaScript errors anywhere in its child component tree and displays a fallback UI instead of crashing the whole application. As of 2026, React has not yet introduced a hook-based alternative for this, so error boundaries must still be implemented as Class components.
 
-When writing fresh code, [there is no rational reason to use Class Components](https://reactjs.org/docs/hooks-faq.html#should-i-use-hooks-classes-or-a-mix-of-both) if the project is using React with a version number 16.8 or greater. On the other hand, [there is currently no need to rewrite all old React code](https://reactjs.org/docs/hooks-faq.html#do-i-need-to-rewrite-all-my-class-components) as Functional components.
+An error boundary looks like this:
 
+```js
+import React from 'react'
 
-TODO: example of an error boundary
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false, error: null }
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error }
+  }
+
+  componentDidCatch(error, info) {
+    console.error('ErrorBoundary caught an error', error, info)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div>
+          <h2>Something went wrong.</h2>
+          <p>{this.state.error.message}</p>
+          <button onClick={() => this.setState({ hasError: false, error: null })}>
+            try again
+          </button>
+        </div>
+      )
+    }
+
+    return this.props.children
+  }
+}
+
+export default ErrorBoundary
+```
+
+The two key lifecycle methods are <i>getDerivedStateFromError</i>, which updates state so the next render shows the fallback UI, and <i>componentDidCatch</i>, which is a good place to log the error to an error reporting service.
+
+You can wrap any part of your component tree with an error boundary to contain failures to that subtree:
+
+```js
+const App = () => {
+  return (
+    <div>
+      <ErrorBoundary>
+        <Notes />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Persons />
+      </ErrorBoundary>
+    </div>
+  )
+}
+```
+
+If <i>Notes</i> throws an error, only that section shows the fallback. <i>Persons</i> continues to work normally.
+
+Because this is the one remaining use case for Class components, many projects use  the [react-error-boundary](https://github.com/bvaughn/react-error-boundary) library, which wraps the class-based machinery behind a convenient Functional component API so you never have to write a Class component yourself.
 
 ### Frontend and backend in the same repository
 
 During the course, we have created the frontend and backend into separate repositories. This is a very typical approach. However, we did the deployment by [copying](/en/part3/deploying_app_to_internet#serving-static-files-from-the-backend) the bundled frontend code into the backend repository. A possibly better approach would have been to deploy the frontend code separately.
 
-Sometimes, there may be a situation where the entire application is to be put into a single repository. In this case, a common approach is to put the <i>package.json</i> and <i>webpack.config.js</i> in the root directory, as well as place the frontend and backend code into their own directories, e.g. <i>client</i> and <i>server</i>.
+Sometimes the entire application is put into a single repository. A common and clean way to do this with a modern stack is to keep the Vite frontend in a <i>client</i> directory and the Express backend in a <i>server</i> directory, each with their own <i>package.json</i>. The root of the repository gets a third <i>package.json</i> that acts as a convenience wrapper with scripts to run both together.
+
+A minimal layout of such a [repository](https://github.com/fullstack-hy2020/monorepo) looks like this:
+
+```
+app/
+  package.json        (root, scripts only)
+  client/
+    package.json      (Vite + React)
+    vite.config.js
+    src/
+      App.jsx
+  server/
+    package.json      (Express)
+    index.js
+```
+
+The Express server in <i>server/index.js</i> serves the API and, in production, also serves the built frontend from the <i>client/dist</i> directory:
+
+```js
+const express = require('express')
+const path = require('path')
+
+const app = express()
+
+app.use(express.json())
+
+app.get('/api/ping', (req, res) => {
+  res.json({ message: 'pong', time: new Date().toISOString() })
+})
+
+// serve the built Vite frontend in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/dist')))
+  app.get('/*splat', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'))
+  })
+}
+
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () => console.log(`server running on port ${PORT}`))
+```
+
+During development, the Vite dev server runs on its own port and needs to forward API requests to Express. This is configured in <i>client/vite.config.js</i>:
+
+```js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    proxy: {
+      '/api': 'http://localhost:3001',
+    },
+  },
+})
+```
+
+With the proxy in place, a frontend fetch to <i>/api/ping</i> is automatically forwarded to the Express server during development, so you never have to hard-code the backend URL.
+
+The root <i>package.json</i> ties everything together with a couple of scripts:
+
+```json
+{
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "build": "npm run build --prefix client",
+    "start": "NODE_ENV=production npm start --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  }
+}
+```
+
+There are couple things interesting here.
+
+The <i>dev</i> script uses [concurrently](https://github.com/open-cli-tools/concurrently), a small utility that runs multiple commands at the same time and merges their output into a single terminal stream. Without it you would have to open two separate terminals, one for the backend and one for the frontend. 
+
+The <i>--prefix</i> flag tells npm which subdirectory to treat as the working directory for that command, so <i>npm run dev --prefix server</i> is equivalent to <i>cd server && npm run dev</i>. 
+
+Running <i>npm run dev</i> from the root therefore starts both the Vite dev server and Express in parallel with a single command. In this mode, Vite serves the frontend with hot module replacement: when you edit a React component, the browser updates instantly without a full page reload. The Express server runs separately and the Vite proxy forwards <i>/api</i> requests to it.
+
+Running <i>npm run build</i> compiles the frontend into the <i>client/dist</i> directory. After that, <i>npm start</i> sets <i>NODE_ENV=production</i> and starts Express, which picks up the static files from <i>client/dist</i> and serves both the API and the frontend from a single port. This is the setup you would use when deploying to a server.
+
+Because each part of the project has its own <i>package.json</i>, you need to be explicit about which one you are targeting when installing new packages. The same <i>--prefix</i> flag works for <i>npm install</i> as well:
+
+```bash
+npm install axios --prefix client     # add to the frontend
+npm install mongoose --prefix server  # add to the backend
+```
+
+Alternatively, you can simply <i>cd</i> into the directory and run <i>npm install</i> from there as you normally would.
 
 ### Organization of code in React application
 
-In most applications, we followed the principle by which components were placed in the directory <i>components</i>, reducers were placed in the directory <i>reducers</i>, and the code responsible for communicating with the server was placed in the directory <i>services</i>. This way of organizing fits a smaller application just fine, but as the amount of components increases, better solutions are needed. There is no one correct way to organize a project. The article [The 100% correct way to structure a React app (or why there’s no such thing)](https://medium.com/hackernoon/the-100-correct-way-to-structure-a-react-app-or-why-theres-no-such-thing-3ede534ef1ed) provides some perspective on the issue.
+In most applications during this course, we followed the convention of placing components in a <i>components</i> directory, hooks in <i>hooks</i>, and server communication code in <i>services</i>. For the BlogList app that might look like this:
 
+```
+src/
+  App.jsx
+  components/
+    Blog.jsx
+    BlogList.jsx
+    LoginForm.jsx
+    Notification.jsx
+  hooks/
+    useField.js
+  services/
+    blogs.js
+    users.js
+  stores/
+    blogStore.js
+    notificationStore.js
+```
+
+This flat, type-based grouping works well for small applications. 
+
+When the app uses routing, it is common to add a <i>pages</i> directory (sometimes called <i>views</i>) for the top-level route components, keeping reusable UI components in <i>components</i>. This convention is used by frameworks such as [Next.js](https://nextjs.org/docs/pages/building-your-application/routing) and is described in the [React FAQ on file structure](https://legacy.reactjs.org/docs/faq-structure.html):
+
+```
+src/
+  App.jsx
+  pages/
+    HomePage.jsx
+    BlogPage.jsx
+    UserPage.jsx
+  components/
+    Blog.jsx
+    BlogList.jsx
+    LoginForm.jsx
+    Notification.jsx
+  hooks/
+    useField.js
+  services/
+    blogs.js
+    users.js
+  stores/
+    blogStore.js
+    notificationStore.js
+```
+
+As the codebase grows further, however, a change to a single feature may still touch files scattered across every directory, and both <i>components</i> and <i>pages</i> can become hard to navigate.
+
+A common response to this is to group files by <i>feature</i> instead. The [Feature-Sliced Design](https://feature-sliced.design/) methodology formalises this approach, and the [bulletproof-react](https://github.com/alan2207/bulletproof-react) project is a widely-referenced example of applying it in practice:
+
+```
+src/
+  App.jsx
+  features/
+    blogs/
+      Blog.jsx
+      BlogList.jsx
+      blogService.js
+      blogStore.js
+    users/
+      UserList.jsx
+      userService.js
+    notifications/
+      Notification.jsx
+      notificationStore.js
+  hooks/
+    useField.js
+```
+
+Everything related to blogs lives together, so adding or changing a feature means working in one place rather than several. There is no single correct way to organize a larger project, and the right choice depends on the size and nature of the application.
 
 ### Changes on the server
 
-If there are changes in the state on the server, e.g. when new blogs are added by other users to the bloglist service, the React frontend we implemented during this course will not notice these changes until the page reloads. A similar situation arises when the frontend triggers a time-consuming computation in the backend. How do we reflect the results of the computation to the frontend?
+The applications we build during this course fetch data from the server when the page loads and after user actions, but they have no way of learning about changes made by other users. If a fellow user adds a new blog post, our frontend simply does not know about it until the page is refreshed. How can we keep the UI in sync with a server that changes independently?
 
-One way is to execute [polling](<https://en.wikipedia.org/wiki/Polling_(computer_science)>) on the frontend, meaning repeated requests to the backend API e.g. using the [setInterval](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval) command.
+The simplest approach is [polling](https://en.wikipedia.org/wiki/Polling_(computer_science)): the frontend repeatedly asks the server for fresh data at a fixed interval, for example using [setInterval](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval). Polling is easy to implement but wasteful, because most requests return nothing new.
 
-A more sophisticated way is to use [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) which allow for establishing a two-way communication channel between the browser and the server. In this case, the browser does not need to poll the backend, and instead only has to define callback functions for situations when the server sends data about updating state using a WebSocket.
+A cleaner alternative is [WebSockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API), which open a persistent two-way connection between the browser and the server. The server can then push updates to connected clients the moment something changes, without the client having to ask. WebSockets are now supported by all modern browsers.
 
-WebSockets is an API provided by the browser, which is not yet fully supported on all browsers:
+Working directly with the WebSocket API can be cumbersome. The [Socket.io](https://socket.io/) library wraps it with a higher-level API and adds automatic reconnection and other conveniences.
 
-![caniuse chart showing websockets not usable by all yet](../../images/7/31ea.png)
-
-Instead of directly using the WebSocket API, it is advisable to use the [Socket.io](https://socket.io/) library, which provides various <i>fallback</i> options in case the browser does not have full support for WebSockets.
-
-In [part 8](/en/part8), our topic is GraphQL, which provides a nice mechanism for notifying clients when there are changes in the backend data.
-
-### Virtual DOM
-
-The concept of the Virtual DOM often comes up when discussing React. What is it all about? As mentioned in [part 0](/en/part0/fundamentals_of_web_apps#document-object-model-or-dom), browsers provide a [DOM API](https://developer.mozilla.org/fi/docs/DOM) through which the JavaScript running in the browser can modify the elements defining the appearance of the page.
-
-When a software developer uses React, they rarely or never directly manipulate the DOM. The function defining the React component returns a set of [React elements](https://reactjs.org/docs/glossary.html#elements). Although some of the elements look like normal HTML elements
-
-```js
-const element = <h1>Hello, world</h1>
-```
-
-they are also just JavaScript-based React elements at their core.
-
-The React elements defining the appearance of the components of the application make up the [Virtual DOM](https://reactjs.org/docs/faq-internals.html#what-is-the-virtual-dom), which is stored in system memory during runtime.
-
-With the help of the [ReactDOM](https://react.dev/reference/react-dom) library, the virtual DOM defined by the components is rendered to a real DOM that can be shown by the browser using the DOM API:
-
-```js
-ReactDOM.createRoot(document.getElementById('root')).render(<App />)
-```
-
-When the state of the application changes, a <i>new virtual DOM</i> gets defined by the components. React has the previous version of the virtual DOM in memory and instead of directly rendering the new virtual DOM using the DOM API, React computes the optimal way to update the DOM (remove, add or modify elements in the DOM) such that the DOM reflects the new virtual DOM.
+In [part 8](/en/part8) we look at GraphQL, which includes a subscription mechanism that lets the server notify clients about data changes in a structured way.
 
 ### React/node-application security
 
@@ -308,7 +500,7 @@ The one-year-old project that is used in [part 9](/en/part9) of this course alre
 
 ![npm outdated output of patientor](../../images/7/33x.png)
 
-The dependencies can be brought up to date by updating the file <i>package.json</i>. The best way to do that is by using a tool called _npm-check-updates_. It can be installed globally by running the command:
+The dependencies can be brought up to date by updating the file <i>package.json</i>. The best way to do that is by using a tool called <i>npm-check-updates</i>. It can be installed globally by running the command:
 
 ```bash
 npm install -g npm-check-updates
@@ -318,35 +510,37 @@ Using this tool, the up-to-dateness of dependencies is checked in the following 
 
 ```bash
 $ npm-check-updates
-Checking ...\ultimate-hooks\package.json
-[====================] 9/9 100%
+Checking ...\my-app\package.json
+[====================] 11/11 100%
 
- @testing-library/react       ^13.0.0  →  ^13.1.1
- @testing-library/user-event  ^14.0.4  →  ^14.1.1
- react-scripts                  5.0.0  →    5.0.1
+ @testing-library/react       ^14.0.0  →  ^15.0.0
+ @testing-library/user-event  ^14.4.3  →  ^14.5.2
+ react                        ^18.2.0  →  ^19.0.0
+ vite                          ^5.0.0  →   ^6.0.0
 
 Run ncu -u to upgrade package.json
 ```
 
-The file <i>package.json</i> is brought up to date by running the command _ncu -u_.
+The file <i>package.json</i> is brought up to date by running the command <i>ncu -u</i>.
 
 ```bash
 $ ncu -u
-Upgrading ...\ultimate-hooks\package.json
-[====================] 9/9 100%
+Upgrading ...\my-app\package.json
+[====================] 11/11 100%
 
- @testing-library/react       ^13.0.0  →  ^13.1.1
- @testing-library/user-event  ^14.0.4  →  ^14.1.1
- react-scripts                  5.0.0  →    5.0.1
+ @testing-library/react       ^14.0.0  →  ^15.0.0
+ @testing-library/user-event  ^14.4.3  →  ^14.5.2
+ react                        ^18.2.0  →  ^19.0.0
+ vite                          ^5.0.0  →   ^6.0.0
 
 Run npm install to install new versions.
 ```
 
-Then it is time to update the dependencies by running the command _npm install_. However, old versions of the dependencies are not necessarily a security risk.
+Then it is time to update the dependencies by running the command <i>npm install</i>. However, old versions of the dependencies are not necessarily a security risk.
 
 The npm [audit](https://docs.npmjs.com/cli/audit) command can be used to check the security of dependencies. It compares the version numbers of the dependencies in your application to a list of the version numbers of dependencies containing known security threats in a centralized error database.
 
-Running _npm audit_ on the same project, it prints a long list of complaints and suggested fixes.
+Running <i>npm audit</i> on the same project, it prints a long list of complaints and suggested fixes.
 Below is a part of the report:
 
 ```js
@@ -377,7 +571,7 @@ To address all issues (including breaking changes), run:
   npm audit fix --force
 ```
 
-After only one year, the code is full of small security threats. Luckily, there are only 2 critical threats.  Let's run _npm audit fix_ as the report suggests:
+After only one year, the code is full of small security threats. Luckily, there are only 2 critical threats.  Let's run <i>npm audit fix</i> as the report suggests:
 
 ```js
 $ npm audit fix
@@ -389,7 +583,7 @@ fixed 354 of 416 vulnerabilities in 20047 scanned packages
   (use `npm audit fix --force` to install breaking changes; or refer to `npm audit` for steps to fix these manually)
 ```
 
-62 threats remain because, by default, _audit fix_ does not update dependencies if their <i>major</i> version number has increased.  Updating these dependencies could lead to the whole application breaking down.
+62 threats remain because, by default, <i>audit fix</i> does not update dependencies if their <i>major</i> version number has increased.  Updating these dependencies could lead to the whole application breaking down.
 
 The source for the critical bug is the library [immer](https://github.com/immerjs/immer)
 
@@ -401,7 +595,7 @@ fix available via `npm audit fix --force`
 Will install react-scripts@5.0.0, which is a breaking change
 ```
 
-Running _npm audit fix --force_ would upgrade the library version but would also upgrade the library _react-scripts_ and that would potentially break down the development environment. So we will leave the library upgrades for later...
+Running <i>npm audit fix --force</i> would upgrade the library version but would also upgrade the library <i>react-scripts</i> and that would potentially break down the development environment. So we will leave the library upgrades for later...
 
 One of the threats mentioned in the list from OWASP is <i>Broken Authentication</i> and the related <i>Broken Access Control</i>. The token-based authentication we have been using is fairly robust if the application is being used on the traffic-encrypting HTTPS protocol. When implementing access control, one should e.g. remember to not only check a user's identity in the browser but also on the server. Bad security would be to prevent some actions to be taken only by hiding the execution options in the code of the browser.
 
@@ -419,29 +613,17 @@ Finally, let's take a look at some technology of tomorrow (or, actually, already
 
 #### Typed versions of JavaScript
 
-Sometimes, the [dynamic typing](https://developer.mozilla.org/en-US/docs/Glossary/Dynamic_typing) of JavaScript variables creates annoying bugs. In part 5, we talked briefly about [PropTypes](/en/part5/props_children_and_proptypes#prop-types): a mechanism which enables one to enforce type-checking for props passed to React components.
+The [dynamic typing](https://developer.mozilla.org/en-US/docs/Glossary/Dynamic_typing) of JavaScript can lead to subtle bugs that are only discovered at runtime. In part 5, we touched on [PropTypes](/en/part5/props_children_and_proptypes#prop-types) as a way to add runtime type checks to component props, but PropTypes have largely fallen out of use as the ecosystem has moved toward [static type checking](https://en.wikipedia.org/wiki/Type_system#Static_type_checking).
 
-Lately, there has been a notable uplift in the interest in [static type checking](https://en.wikipedia.org/wiki/Type_system#Static_type_checking). At the moment, the most popular typed version of Javascript is [TypeScript](https://www.typescriptlang.org/) which has been developed by Microsoft. Typescript is covered in [part 9](/en/part9).
+[TypeScript](https://www.typescriptlang.org/), developed by Microsoft, has become the de facto standard for typed JavaScript. It catches type errors at compile time rather than at runtime, provides excellent editor tooling, and is now used by the majority of new React projects. TypeScript is covered in [part 9](/en/part9).
 
-#### Server-side rendering, isomorphic applications and universal code
+#### Server-side rendering and React Server Components
 
-The browser is not the only domain where components defined using React can be rendered. The rendering can also be done on the [server](https://react.dev/reference/react-dom/server). This kind of approach is increasingly being used, such that, when accessing the application for the first time, the server serves a pre-rendered page made with React. From here onwards, the operation of the application continues, as usual, meaning the browser executes React, which manipulates the DOM shown by the browser. The rendering that is done on the server goes by the name: <i>server-side rendering</i>.
+React components do not have to run in the browser. They can also be rendered on the [server](https://react.dev/reference/react-dom/server), which sends ready-made HTML to the client instead of a blank page that JavaScript must fill in. This <i>server-side rendering</i> (SSR) improves perceived load time and is important for Search Engine Optimization (SEO), since search engine crawlers see fully rendered content without having to execute JavaScript.
 
-One motivation for server-side rendering is Search Engine Optimization (SEO). Search engines have traditionally been very bad at recognizing JavaScript-rendered content. However, the tide might be turning, e.g. take a look at [this](https://www.javascriptstuff.com/react-seo/) and [this](https://medium.freecodecamp.org/seo-vs-react-is-it-neccessary-to-render-react-pages-in-the-backend-74ce5015c0c9).
+The more recent and significant development is [React Server Components](https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023#react-server-components) (RSC), introduced in React 18 and now a core part of the React architecture. A Server Component runs exclusively on the server and is never sent to the browser as JavaScript. It can read directly from a database or file system, keep secrets out of the client bundle, and stream its output to the browser. The browser receives these components as rendered data, not as executable code. <i>Client Components</i>, annotated with <code>'use client'</code>, still run in the browser and handle interactivity as before. In an RSC application most components are Server Components by default, with Client Components used only where user interaction is needed.
 
-Of course, server-side rendering is not anything specific to React or even JavaScript. Using the same programming language throughout the stack in theory simplifies the execution of the concept because the same code can be run on both the front- and backend.
-
-Along with server-side rendering, there has been talk of so-called <i>isomorphic applications</i> and <i>universal code</i>, although there has been some debate about their definitions. According to some [definitions](https://medium.com/@ghengeveld/isomorphism-vs-universal-javascript-4b47fb481beb), an isomorphic web application performs rendering on both frontend and backend. On the other hand, universal code is code that can be executed in most environments, meaning both frontend and backend.
-
-React and Node provide a desirable option for implementing an isomorphic application as universal code.
-
-Writing universal code directly using React is currently still pretty cumbersome. Lately, a library called [Next.js](https://github.com/vercel/next.js), which is implemented on top of React, has garnered much attention and is a good option for making universal applications.
-
-#### Progressive web apps
-
-Lately, people have started using the term [progressive web app](https://developers.google.com/web/progressive-web-apps/) (PWA) launched by Google.
-
-In short, we are talking about web applications working as well as possible on every platform and taking advantage of the best parts of those platforms. The smaller screen of mobile devices must not hamper the usability of the application. PWAs should also work flawlessly in offline mode or with a slow internet connection. On mobile devices, they must be installable just like any other application. All the network traffic in a PWA should be encrypted.
+[Next.js](https://nextjs.org/) has become the standard framework for building React applications that require server-side behaviour. Its App Router (introduced in Next.js 13) is built around React Server Components and provides file-based routing, nested layouts, server actions for mutating data, and built-in support for static generation and incremental static regeneration. In 2026, Next.js is the first choice for any React project where SSR, SEO, or full-stack capabilities matter.
 
 #### Microservice architecture
 
@@ -491,42 +673,20 @@ E.g. Using Amazon's [API gateway](https://aws.amazon.com/api-gateway/) it is pos
 
 Serverless is not about there not being a server in applications, but about how the server is defined. Software developers can shift their programming efforts to a higher level of abstraction as there is no longer a need to programmatically define the routing of HTTP requests, database relations, etc., since the cloud infrastructure provides all of this. Cloud functions also lend themselves to creating a well-scaling system, e.g. Amazon's Lambda can execute a massive amount of cloud functions per second. All of this happens automatically through the infrastructure and there is no need to initiate new servers, etc.
 
-### Useful libraries and interesting links
+### Useful libraries and further reading
 
-The JavaScript developer community has produced a large variety of useful libraries. If you are developing anything more substantial, it is worth it to check if existing solutions are already available.
-Below are listed some libraries recommended by trustworthy parties.
+The JavaScript developer community has produced a large variety of useful libraries. Before writing something from scratch it is always worth checking whether a well-maintained solution already exists.
 
-If your application has to handle complicated data, [lodash](https://www.npmjs.com/package/lodash), which we recommended in [part 4](/en/part4/structure_of_backend_application_introduction_to_testing#exercises-4-3-4-7), is a good library to use. If you prefer the functional programming style, you might consider using [ramda](https://ramdajs.com/).
+You can take advantage of your React know-how when developing mobile applications using [React Native](https://reactnative.dev/), which is the topic of [part 10](/en/part10) of the course.
 
-If you are handling times and dates, [date-fns](https://github.com/date-fns/date-fns) offers good tools for that.
+The course itself continues beyond part 7: [part 8](/en/part8) covers GraphQL, [part 9](/en/part9) TypeScript, [part 10](/en/part10) React Native, [part 11](/en/part11) CI/CD, and [part 12](/en/part12) containers. The full course contents are listed on the [course page](/en/#course-contents).
 
-If you have complex forms in your apps, have a look at whether [React Hook Form](https://react-hook-form.com/) would be a good fit.
+The following external resources are good places to go deeper on React patterns, code quality, and the broader ecosystem:
 
-If your application displays graphs, there are multiple options to choose from. Both [recharts](https://recharts.org/en-US/) and [highcharts](https://github.com/highcharts/highcharts-react) are well-recommended.
-
-The [Immer](https://github.com/mweststrate/immer) provides immutable implementations of some data structures. The library could be of use when using Redux, since as we [remember](/en/part6/flux_architecture_and_redux#pure-functions-immutable) from part 6, reducers must be pure functions, meaning they must not modify the store's state but instead have to replace it with a new one when a change occurs.
-
-[Redux-saga](https://redux-saga.js.org/) provides an alternative way to make asynchronous actions for [Redux Thunk](/en/part6/communicating_with_server_in_a_redux_application#asynchronous-actions-and-redux-thunk) familiar from part 6. Some embrace the hype and like it. I don't.
-
-For single-page applications, the gathering of analytics data on the interaction between the users and the page is [more challenging](https://developers.google.com/analytics/devguides/collection/ga4/single-page-applications?implementation=browser-history) than for traditional web applications where the entire page is loaded. The [React Google Analytics 4](https://github.com/codler/react-ga4) library offers a solution.
-
-You can take advantage of your React know-how when developing mobile applications using Facebook's extremely popular [React Native](https://facebook.github.io/react-native/) library, which is the topic of [part 10](/en/part10) of the course.
-
-When it comes to the tools used for the management and bundling of JavaScript projects, the community has been very fickle. Best practices have changed rapidly (the years are approximations, nobody remembers that far back in the past):
-
-- 2011 [Bower](https://www.npmjs.com/package/bower)
-- 2012 [Grunt](https://www.npmjs.com/package/grunt)
-- 2013-14 [Gulp](https://www.npmjs.com/package/gulp)
-- 2012-14 [Browserify](https://www.npmjs.com/package/browserify)
-- 2015-2023 [Webpack](https://www.npmjs.com/package/webpack)
-- 2023- [esbuild](https://esbuild.github.io/)
-
-Hipsters seemed to have lost their interest in tool development after webpack started to dominate the markets. A few years ago, [Parcel](https://parceljs.org) started to make the rounds marketing itself as simple (which Webpack is not) and faster than Webpack. However, after a promising start, Parcel has not gathered any steam. But recently, [esbuild](https://esbuild.github.io/) has been on a high rise and is already replacing Webpack.
-
-The site <https://reactpatterns.com/> provides a concise list of best practices for React, some of which are already familiar from this course. Another similar list is [react bits](https://vasanthk.gitbooks.io/react-bits/).
-
-[Reactiflux](https://www.reactiflux.com/) is a big chat community of React developers on Discord. It could be one possible place to get support after the course has concluded. For example, numerous libraries have their own channels.
-
-If you know some recommendable links or libraries, make a pull request!
+- [Patterns.dev](https://www.patterns.dev/) covers modern React and JavaScript patterns in depth. For a curated collection of React-specific techniques, [React bits](https://vasanthk.gitbooks.io/react-bits/) is a useful companion.
+- [Overreacted](https://overreacted.io/) is the blog of Dan Abramov, one of the original React core team members. The articles go deep into React's design decisions and mental models, and are worth reading even when they are a few years old.
+- [Kent C. Dodds](https://kentcdodds.com/blog) writes extensively about React best practices, testing, and component design. His posts on testing philosophy in particular have shaped how the community thinks about frontend tests.
+- [Tao of React](https://alexkondov.com/tao-of-react/) is a short, opinionated guide to structuring React applications that covers components, state, props, and project layout in a pragmatic way.
+- [Reactiflux](https://www.reactiflux.com/) is a large React developer community on Discord, and a good place to ask questions after the course ends. Many open-source libraries maintain their own channels there.
 
 </div>
