@@ -242,7 +242,7 @@ const App = () => {
 
 > #### Where do set and state come from?
 >
-> Where does <i>set</i> come from? It is a helper function provided by Zustand's <i>create</i> function, used to update the state. <i>create</i> calls the parameter function it receives and automatically passes <i>set</i> to it.Yyou don't need to call or import it yourself; Zustand takes care of that.
+> Where does <i>set</i> come from? It is a helper function provided by Zustand's <i>create</i> function, used to update the state. <i>create</i> calls the parameter function it receives and automatically passes <i>set</i> to it. You don't need to call or import it yourself; Zustand takes care of that.
 >
 > Where does <i>state</i> come from? When a function is given as a parameter to <i>set</i> (instead of a new state object directly), Zustand calls that function with the store's current state as its argument. This way, state-updating functions can access the old state to compute the new one.
 
