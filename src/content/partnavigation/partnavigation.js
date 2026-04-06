@@ -42,14 +42,7 @@ module.exports = {
       c: 'React Query, Context API',
       d: 'Redux (legacy)',
     },
-    7: {
-      a: 'React Router',
-      b: 'custom-hookit',
-      c: 'Lisää tyyleistä',
-      d: 'Vite ja esbuild',
-      e: 'Luokkakomponentit, Sekalaista',
-      f: 'Tehtäviä: blogilistan laajennus',
-    },
+    7: {},
     8: {
       a: 'GraphQL-palvelin',
       b: 'React ja GraphQL',
@@ -107,12 +100,10 @@ module.exports = {
       d: 'Redux (legacy)',
     },
     7: {
-      a: 'React Router',
-      b: 'Custom hooks',
-      c: 'More about styles',
-      d: 'Vite internals and esbuild',
-      e: 'Class components, Miscellaneous',
-      f: 'Exercises: extending the bloglist',
+      a: 'More about React hooks',
+      b: 'Vite internals and esbuild',
+      c: 'Miscellaneous',
+      d: 'Exercises: extending the bloglist',
     },
     8: {
       a: 'GraphQL-server',

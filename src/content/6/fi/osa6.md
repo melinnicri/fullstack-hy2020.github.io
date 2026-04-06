@@ -12,6 +12,5 @@ Tutustumme myös Reactin suoraan tukemaan kevyempään tilanhallintaan, eli Reac
 
 <i>Osa päivitetty 5.4.2026</i>
 - <i>Redux korvattu Zustandilla</i>
-- <i>useReducer siirretty osaan 7</i>
 
 </div>
