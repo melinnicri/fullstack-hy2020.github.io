@@ -177,7 +177,7 @@ You can access this view by clicking the name of the user in the view that lists
 
 Implement the functionality for commenting the blog posts:
 
-![browser blogs showing list of comments for a blog](../../images/7/48.png)
+![browser blogs showing list of comments for a blog](../../images/7/u8.png)
 
 Comments should be anonymous, meaning that they are not associated with the user who left the comment.
 
@@ -189,7 +189,7 @@ An appropriate mechanism for adding comments to a blog post would be an HTTP POS
 
 Extend your application so that users can add comments to blog posts from the frontend:
 
-![browser showing comments added via frontend](../../images/7/49.png)
+![browser showing comments added via frontend](../../images/7/u9.png)
 
 #### 7.20: Styling
 

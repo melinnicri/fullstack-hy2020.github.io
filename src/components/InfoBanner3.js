@@ -55,11 +55,8 @@ const InfoBanner = ({ visible, onHide }) => {
               <li><i>Webpack replaced with esbuild</i></li>
               <li><i>Error boundaries and keeping the frontend and backend in a single repository covered</i></li>
               <li><i>Some of the hook exercises have changed</i></li>
-              <li><i>Two new exercises for the blog list</i></li>
+              <li><i>Some new exercises for the blog list</i></li>
             </ul>
-          </div>
-           <div style={{ marginBottom: 10 }}>
-            There may still be some minor changes coming to the blog list exercise set in the next few days.
           </div>
           <div>
             The old content is still found <a style={linkStyle} href="https://github.com/fullstack-hy2020/fullstack-hy2020.github.io/tree/7599b17c02b056fcad4f12d8708f0e07980b7564/src/content/7/en">here</a>. 
