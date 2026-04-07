@@ -126,9 +126,8 @@ Expand your solution so that it is again possible to like and delete a blog.
 
 Use the Context API to manage the data for the logged in user.
 
-### Cleanup
 
-#### 7.15: Custom hooks
+#### 7.15: Cleaning the code
 
 Your application most likely contains code that handles the logged-in user via <i>localStorage</i> in several places:
 
@@ -144,11 +143,15 @@ window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
 window.localStorage.removeItem('loggedBlogappUser')
 ```
 
-Extract this logic into a custom hook called <i>usePersistentUser</i>. The hook should read the initial value from <i>localStorage</i> on mount and keep the stored value in sync whenever it is updated or cleared. It should be usable like this:
+Extract this logic into a dedicated service module <i>src/services/persistentUser.js</i>, that exports the following functions:
 
 ```js
-const {user, setUser, removeUser} = usePersistentUser()
+const getUser = () => { ... }
+const saveUser = (user) => { ... }
+const removeUser = () => { ... }
 ```
+
+Replace all direct <i>localStorage</i> access in the application with calls to these functions.
 
 Also take the [useField](/en/part7/more_about_react_hooks) hook introduced earlier in this part into use in the forms.
 
