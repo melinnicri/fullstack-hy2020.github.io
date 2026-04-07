@@ -147,7 +147,7 @@ window.localStorage.removeItem('loggedBlogappUser')
 Extract this logic into a custom hook called <i>usePersistentUser</i>. The hook should read the initial value from <i>localStorage</i> on mount and keep the stored value in sync whenever it is updated or cleared. It should be usable like this:
 
 ```js
-const {user, setUser, removeUser} = usePersistentUser('loggedBlogappUser')
+const {user, setUser, removeUser} = usePersistentUser()
 ```
 
 Also take the [useField](/en/part7/more_about_react_hooks) hook introduced earlier in this part into use in the forms.
