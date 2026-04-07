@@ -7,7 +7,7 @@ lang: en
 
 <div class="content">
 
-In addition to the six exercises in the [React Hooks](/en/part7/more_about_react_hooks) sections of this part of the course material, 13 exercises continue our work on the BlogList application that we worked on in parts four and five of the course material. Some of the following exercises are "features" that are independent of one another, meaning that there is no need to finish them in any particular order. You are free to skip over a part of the exercises if you wish to do so. Quite many of them are about applying the advanced state management technique (Zustand, React Query and context) covered in [part 6](/en/part6).
+In addition to the six exercises in the [React Hooks](/en/part7/more_about_react_hooks) sections of this part of the course material, 14 exercises continue our work on the BlogList application that we worked on in parts four and five of the course material. Some of the following exercises are "features" that are independent of one another, meaning that there is no need to finish them in any particular order. You are free to skip over a part of the exercises if you wish to do so. Quite many of them are about applying the advanced state management technique (Zustand, React Query and context) covered in [part 6](/en/part6).
 
 If you do not want to use your BlogList application, you are free to use the code from the model solution as a starting point for these exercises.
 
@@ -21,7 +21,7 @@ One good piece of advice for both refactoring and writing new code is to take <i
 
 <div class="tasks">
 
-### Exercises 7.7.-7.19.
+### Exercises 7.7.-7.20.
 
 These exercises assume that you have already completed the exercises [5.24-5.29](/en/part5/react_router_ui_frameworks#exercises-5-24-5-29). If you have not, do those first.
 
@@ -126,7 +126,6 @@ Expand your solution so that it is again possible to like and delete a blog.
 
 Use the Context API to manage the data for the logged in user.
 
-
 #### 7.15: Cleaning the code
 
 Your application most likely contains code that handles the logged-in user via <i>localStorage</i> in several places:
@@ -155,50 +154,24 @@ Replace all direct <i>localStorage</i> access in the application with calls to t
 
 Also take the [useField](/en/part7/more_about_react_hooks) hook introduced earlier in this part into use in the forms.
 
-### More views
-
 The rest of the tasks are common to both the Zustand and React Query versions.
 
 #### 7.16: Users view
 
 Implement a view to the application that displays all of the basic information related to users:
 
-![browser blogs with users table showing blogs created](../../images/7/41.png)
+![browser blogs with users table showing blogs created](../../images/7/b5.png)
 
 #### 7.17: Individual User View
 
 Implement a view for individual users that displays all of the blog posts added by that user:
 
-![browser blogs showing users added blogs](../../images/7/44.png)
+![browser blogs showing users added blogs](../../images/7/b6.png)
 
 You can access this view by clicking the name of the user in the view that lists all users:
 
-![browser blogs showing clickable users](../../images/7/43.png)
+![browser blogs showing clickable users](../../images/7/b7.png)
 
-<i>**NB:**</i> you will almost certainly stumble across the following error message during this exercise:
-
-![browser TypeError cannot read property name of undefined](../../images/7/42ea.png)
-
-The error message will occur if you refresh the individual user page.
-
-The cause of the issue is that, when we navigate directly to the page of an individual user, the React application has not yet received the data from the backend. One solution for this problem is to use conditional rendering:
-
-```js
-const User = () => {
-  const user = ...
-  // highlight-start
-  if (!user) {
-    return null
-  }
-  // highlight-end
-
-  return (
-    <div>
-      // ...
-    </div>
-  )
-}
-```
 
 #### 7.18: Comments, step 1
 
@@ -218,6 +191,10 @@ Extend your application so that users can add comments to blog posts from the fr
 
 ![browser showing comments added via frontend](../../images/7/49.png)
 
-This was the last exercise for this part of the course and it's time to push your code to GitHub and mark all of your finished exercises to the [exercise submission system](https://studies.cs.helsinki.fi/stats/courses/fullstackopen).
+#### 7.20: Styling
+
+Improve the visual appearance of the new features of your application using the techniques covered in [part 5](/en/part5/react_router_ui_frameworks). 
+ 
+This was the last exercise for this part of the course and it's time to push your code to GitHub and mark all of your completed exercises to the [exercise submission system](https://studies.cs.helsinki.fi/stats/courses/fullstackopen).
 
 </div>
