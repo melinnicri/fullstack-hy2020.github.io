@@ -586,7 +586,7 @@ The current code for the app is available in its entirety on [GitHub](https://gi
 
 <div class="tasks">
 
-### Exercises 5.24–5.29.
+### Exercises 5.24–5.28.
 
 #### 5.24: routed blogs, step1
 
@@ -620,7 +620,7 @@ Users navigate to the single blog post view from the blog list:
 
 Make sure that the "Like" feature for blogs still works! Also modify the functionality so that only logged-in users can "Like" a blog.
 
-#### 5.27: routed blogs, step3
+#### 5.26: routed blogs, step3
 
 Create a new view for creating a new blog, which logged-in users can access via the navigation:
 
@@ -628,7 +628,7 @@ Create a new view for creating a new blog, which logged-in users can access via 
 
 Adding a new blog and deleting an existing blog should redirect the user to the all blogs view
 
-#### 5.28: routed blogs, step4
+#### 5.27: routed blogs, step4
 
 The app’s usability and appearance are now better than before. Unfortunately, some of the tests have broken. 
 
@@ -637,7 +637,7 @@ Now modify the tests for the single blog view created in Vitest as follows
 - Authenticated users who are not the blog’s creator are shown only the like button
 - The blog’s creator is also shown the delete button
 
-#### 5.29: routed blogs, step5
+#### 5.28: routed blogs, step5
 
 Next up is fixing the end-to-end tests created with Playwright. The tests we wrote earlier are completely broken, and we’ll have to make major changes to them. 
 
@@ -1077,11 +1077,11 @@ Styled-Components has been steadily gaining popularity lately, and it currently 
 
 <div class="tasks">
 
-### Exercises 5.30–5.32
+### Exercises 5.29–5.31
 
 Next, improve the styles of the blog app using either MaterialUI or Styled Components.
 
-#### 5.30: styled blogs, step 1
+#### 5.29: styled blogs, step 1
 
 Add styles to the application’s forms.
 
@@ -1093,13 +1093,13 @@ Creating a new blog:
 
 ![](../../images/5/l11.png)
 
-#### 5.31: styled blogs, step2
+#### 5.30: styled blogs, step2
 
 Now style the app's navigation bar and the component that displays notifications. The result might look something like this:
 
 ![](../../images/5/l12.png)
 
-#### 5.32: styled blogs, step 3
+#### 5.31: styled blogs, step 3
 
 Customize the appearance of the single blog display component as you see fit. Here is an example:
 

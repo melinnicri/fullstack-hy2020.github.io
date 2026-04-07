@@ -587,7 +587,7 @@ Sovelluksen tämänhetkinen koodi on kokonaisuudessaan [GitHubissa](https://gith
 
 <div class="tasks">
 
-### Tehtävät 5.24-5.29.
+### Tehtävät 5.24-5.28.
 
 #### 5.24: routed blogs, step1
 
@@ -621,7 +621,7 @@ Yksittäisen blogin näkymään navigoidaan blogien listalta:
 
 Varmista, että blogien tykkääminen toimii edelleen! Muuta myös toiminnallisuutta siten, että ainoastaan kirjautunut käyttäjä voi tykätä blogista.
 
-#### 5.27: routed blogs, step3
+#### 5.26: routed blogs, step3
 
 Tee uuden blogin luomista varten uusi näkymä, jonne kirjautunut käyttäjä pääsee navigaation kautta:
 
@@ -629,7 +629,7 @@ Tee uuden blogin luomista varten uusi näkymä, jonne kirjautunut käyttäjä p�
 
 Uuden blogin lisäyksen sekä olemassa olevan blogin poiston tulee viedä sovellus kaikkien blogien näkymään
 
-#### 5.28: routed blogs, step4
+#### 5.27: routed blogs, step4
 
 Sovelluksen käytettävyys ja ulkoasu on nyt aiempaa parempi. Ikävä kyllä osa testeistä on päässyt hajoamaan. 
 
@@ -638,7 +638,7 @@ Muuta nyt yksittäisen blogin näkymän Vitestillä tehtyjä yksikkötestejä se
 - kirjautuneelle käyttäjälle, joka ei ole blogin luoja näytetään ainoastaan tykkäysnappi
 - blogin luojalle näytetään myös blogin poistonappi
 
-#### 5.29: routed blogs, step4
+#### 5.28: routed blogs, step5
 
 Seuraavana on vuorossa Playwrightillä tehtyjen end to end -testien korjaaminen. Aiemmin tekemämme testit ovat totaalisesti rikki, ja joudumme tekemään testeihin suuria muutoksia. 
 
@@ -1080,11 +1080,11 @@ styled-components on nostanut tasaisesti suosiotaan viime aikoina ja tällä het
 
 <div class="tasks">
 
-### Tehtävät 5.30.-5.32.
+### Tehtävät 5.29.-5.31.
 
 Parannellaan seuraavaksi blogisovelluksen tyylejä joko MaterialUI:n tai Styled Componentsin avulla.
 
-#### 5.30: styled blogs, step1
+#### 5.29: styled blogs, step1
 
 Lisää tyylit sovelluksen lomakkeille.
 
@@ -1097,13 +1097,13 @@ Uuden blogin luominen:
 ![](../../images/5/l11.png)
 
 
-#### 5.31: styled blogs, step2
+#### 5.30: styled blogs, step2
 
 Tyylittele nyt sovelluksen navigaatiopalkki sekä notifikaatiot näyttävä komponentti. Ratkaisu voi näyttää esim. seuraavalta
 
 ![](../../images/5/l12.png)
 
-#### 5.32: styled blogs, step3
+#### 5.31: styled blogs, step3
 
 Paranna haluamallasi tavalla yksittäisen blogin näyttävän komponentin ulkonäköä. Seuraavassa eräs esimerkki:
 

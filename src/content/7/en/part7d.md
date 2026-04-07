@@ -15,7 +15,7 @@ Many of the exercises in this part of the course material will require the [refa
 
 One good piece of advice for both refactoring and writing new code is to take <i>baby steps</i>. Losing your sanity is almost guaranteed if you leave the application in a completely broken state for long periods while refactoring.
 
-**These exercises assume that you have already completed the exercises [5.24-5.29](/en/part5/react_router_ui_frameworks#exercises-5-24-5-29). If you have not, do those first.**
+**These exercises assume that you have already completed the exercises [5.24-5.28](/en/part5/react_router_ui_frameworks#exercises-5-24-5-28). If you have not, do those first.**
 
 </div>
 
@@ -23,7 +23,7 @@ One good piece of advice for both refactoring and writing new code is to take <i
 
 ### Exercises 7.7.-7.20.
 
-These exercises assume that you have already completed the exercises [5.24-5.29](/en/part5/react_router_ui_frameworks#exercises-5-24-5-29). If you have not, do those first.
+These exercises assume that you have already completed the exercises [5.24-5.28](/en/part5/react_router_ui_frameworks#exercises-5-24-5-28). If you have not, do those first.
 
 #### 7.7: Frontend and backend in the same repository
 
