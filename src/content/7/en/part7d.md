@@ -7,7 +7,7 @@ lang: en
 
 <div class="content">
 
-In addition to the six exercises in the [React Hooks](/en/part7/more_about_react_hooks) sections of this part of the course material, 16 exercises continue our work on the BlogList application that we worked on in parts four and five of the course material. Some of the following exercises are "features" that are independent of one another, meaning that there is no need to finish them in any particular order. You are free to skip over a part of the exercises if you wish to do so. Quite many of them are about applying the advanced state management technique (Zustand, React Query and context) covered in [part 6](/en/part6).
+In addition to the six exercises in the [React Hooks](/en/part7/more_about_react_hooks) sections of this part of the course material, 13 exercises continue our work on the BlogList application that we worked on in parts four and five of the course material. Some of the following exercises are "features" that are independent of one another, meaning that there is no need to finish them in any particular order. You are free to skip over a part of the exercises if you wish to do so. Quite many of them are about applying the advanced state management technique (Zustand, React Query and context) covered in [part 6](/en/part6).
 
 If you do not want to use your BlogList application, you are free to use the code from the model solution as a starting point for these exercises.
 
@@ -21,7 +21,7 @@ One good piece of advice for both refactoring and writing new code is to take <i
 
 <div class="tasks">
 
-### Exercises 7.7.-7.22.
+### Exercises 7.7.-7.19.
 
 These exercises assume that you have already completed the exercises [5.24-5.29](/en/part5/react_router_ui_frameworks#exercises-5-24-5-29). If you have not, do those first.
 
@@ -124,19 +124,45 @@ Expand your solution so that it is again possible to like and delete a blog.
 
 #### 7.14: React Query and Context step 4
 
-Use the useReducer-hook and context to manage the data for the logged in user.
+Use the Context API to manage the data for the logged in user.
 
-### Views
+### Cleanup
+
+#### 7.15: Custom hooks
+
+Your application most likely contains code that handles the logged-in user via <i>localStorage</i> in several places:
+
+```js
+const userJSON = window.localStorage.getItem('loggedBlogappUser')
+
+// ...
+
+window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+
+// ...
+
+window.localStorage.removeItem('loggedBlogappUser')
+```
+
+Extract this logic into a custom hook called <i>usePersistentUser</i>. The hook should read the initial value from <i>localStorage</i> on mount and keep the stored value in sync whenever it is updated or cleared. It should be usable like this:
+
+```js
+const {user, setUser, removeUser} = usePersistentUser('loggedBlogappUser')
+```
+
+Also take the [useField](/en/part7/more_about_react_hooks) hook introduced earlier in this part into use in the forms.
+
+### More views
 
 The rest of the tasks are common to both the Zustand and React Query versions.
 
-#### 7.15: Users view
+#### 7.16: Users view
 
 Implement a view to the application that displays all of the basic information related to users:
 
 ![browser blogs with users table showing blogs created](../../images/7/41.png)
 
-#### 7.16: Individual User View
+#### 7.17: Individual User View
 
 Implement a view for individual users that displays all of the blog posts added by that user:
 
@@ -171,7 +197,7 @@ const User = () => {
 }
 ```
 
-#### 7.19: Comments, step 1
+#### 7.18: Comments, step 1
 
 Implement the functionality for commenting the blog posts:
 
@@ -183,19 +209,11 @@ In this exercise, it is enough for the frontend to only display the comments tha
 
 An appropriate mechanism for adding comments to a blog post would be an HTTP POST request to the <i>api/blogs/:id/comments</i> endpoint.
 
-#### 7.20: Comments, step 2
+#### 7.19: Comments, step 2
 
 Extend your application so that users can add comments to blog posts from the frontend:
 
 ![browser showing comments added via frontend](../../images/7/49.png)
-
-#### 7.21: Styles, step 1
-
-Improve the appearance of your application by applying one of the methods shown in the course material.
-
-#### 7.22: Styles, step 2
-
-You can mark this exercise as finished if you use an hour or more for styling your application.
 
 This was the last exercise for this part of the course and it's time to push your code to GitHub and mark all of your finished exercises to the [exercise submission system](https://studies.cs.helsinki.fi/stats/courses/fullstackopen).
 
