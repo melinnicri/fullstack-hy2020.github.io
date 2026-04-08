@@ -1,76 +1,37 @@
-# Conceptos básicos de React:
+# Full Stack Open 2026 - Parte 1
 
-# Ejercicio para practicar en React:
+Este repositorio contiene mis soluciones a los ejercicios de la **Parte 1** del curso Full Stack Open de la Universidad de Helsinki.
 
-- La forma más sencilla de empezar es usar una herramienta llamada Vite.
-- Creemos una nueva app usando la herramienta create-vite:
-    - se instala npm create vite@latest
-Queda con las siguientes características:
-"""
-PS C:...\fullstackopen2026> npm create vite@latest
-Need to install the following packages:
-create-vite@9.0.4
-Ok to proceed? (y) y
+## 🚀 Conceptos básicos de React
+Para iniciar este proyecto, se utilizó la herramienta **Vite**:
 
-> npx
-> create-vite
-
-│
-◇  Project name:
-│  part1
-│
-◇  Select a framework:
-│  React
-│
-◇  Select a variant:
-│  JavaScript
-│
-◇  Install with npm and start now?
-│  No
-│
-◇  Scaffolding project in C:...\fullstackopen2026\part1...
-│
-└  Done. Now run:
-
-  cd part1
-  npm install
-  npm run dev
-"""
-Luego se instala npm en la carpeta llamada part1 y queda:
-
-"""
-PS C:...\fullstackopen2026> cd part1
-PS C:...\fullstackopen2026\part1> npm install
-
-added 151 packages, and audited 152 packages in 15s
-
-36 packages are looking for funding
-  run `npm fund` for details
-
-found 0 vulnerabilities
-"""
-Se abre con:
+```bash
+npm create vite@latest
+# Configuración: part1 -> React -> JavaScript
+cd part1
+npm install
 npm run dev
 
-Y queda:
+☕ Tarea 1: UniCafe
+Aplicación para recopilar comentarios (good, neutral, bad) de una cafetería y mostrar estadísticas detalladas.
 
-"""
-> part1@0.0.0 dev
-> vite
+Ejercicios 1.6 al 1.11
+Se implementaron componentes como Button, StatisticLine y Statistics, utilizando renderizado condicional para mostrar los datos solo cuando se ha recibido feedback.
 
-
-  VITE v8.0.7  ready in 469 ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-  ➜  press h + enter to show help
-  """
-
-  Se abre una página web: http://localhost:5173/
+Código de la solución (App.jsx):
 
 
 
-  Tarea 1:
+
+
+💡 Tarea 2: Anécdotas
+Aplicación que muestra anécdotas de ingeniería de software de forma aleatoria y permite votar por ellas.
+
+Ejercicios 1.12 al 1.14
+Se añadió la lógica para gestionar los votos en un array del mismo tamaño que la lista de anécdotas y un sistema para detectar dinámicamente cuál es la anécdota más votada.
+
+Código de la solución (App.jsx):
+Tarea 1:
 
   1.6: UniCafe Paso 1
 Como muchas empresas, la cafetería estudiantil Unicafe de la Universidad de Helsinki también recoge ahora opiniones de los clientes. Crea una aplicación de comentarios online para Unicafe. Solo hay tres opciones de respuesta: buena, neutral y mala.
