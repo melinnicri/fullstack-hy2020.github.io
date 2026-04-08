@@ -19,21 +19,7 @@ Ejercicios 1.6 al 1.11
 Se implementaron componentes como Button, StatisticLine y Statistics, utilizando renderizado condicional para mostrar los datos solo cuando se ha recibido feedback.
 
 Código de la solución (App.jsx):
-
-
-
-
-
-💡 Tarea 2: Anécdotas
-Aplicación que muestra anécdotas de ingeniería de software de forma aleatoria y permite votar por ellas.
-
-Ejercicios 1.12 al 1.14
-Se añadió la lógica para gestionar los votos en un array del mismo tamaño que la lista de anécdotas y un sistema para detectar dinámicamente cuál es la anécdota más votada.
-
-Código de la solución (App.jsx):
-Tarea 1:
-
-  1.6: UniCafe Paso 1
+1.6: UniCafe Paso 1
 Como muchas empresas, la cafetería estudiantil Unicafe de la Universidad de Helsinki también recoge ahora opiniones de los clientes. Crea una aplicación de comentarios online para Unicafe. Solo hay tres opciones de respuesta: buena, neutral y mala.
 
 La app debería mostrar el número de cada comentario. La app puede mostrar, por ejemplo, De lo siguiente:
@@ -604,6 +590,17 @@ const App = () => {
 export default App
 """
 
+
+
+
+
+💡 Tarea 2: Anécdotas
+Aplicación que muestra anécdotas de ingeniería de software de forma aleatoria y permite votar por ellas.
+
+Ejercicios 1.12 al 1.14
+Se añadió la lógica para gestionar los votos en un array del mismo tamaño que la lista de anécdotas y un sistema para detectar dinámicamente cuál es la anécdota más votada.
+
+Código de la solución (App.jsx):
 1.12*: Anécdotas Paso 1
 En la producción de software, hay innumerables anécdotas o pequeñas "frases rápidas" que cristalizan las verdades eternas de la industria.
 
